@@ -1,0 +1,1 @@
+include ':app', ':barcodereader', ':expandablecardview', ':jools-1.1'
