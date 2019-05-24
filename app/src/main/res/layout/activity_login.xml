@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    android:id="@+id/login_linear_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimaryDark"
-    android:gravity="center_horizontal">
+    android:gravity="center_horizontal"
+    android:background="@color/colorPrimaryDark">
 
     <ImageView
         android:id="@+id/loginLogo"
@@ -13,44 +15,67 @@
         android:layout_marginTop="59dp"
         android:src="@drawable/logo" />
 
+
+
     <EditText
         android:id="@+id/username"
-        android:layout_width="200dp"
-        android:layout_height="30dp"
-        android:layout_marginTop="30dp"
-        android:paddingStart="5dp"
+        android:hint="Username"
+        android:layout_width="220dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="35dp"
+        android:paddingStart="10dp"
         android:paddingEnd="5dp"
         android:focusable="true"
-        android:background="@drawable/rounded_edittext"
+        android:background="@drawable/rounded_edittext_login"
         android:drawableStart="@drawable/ic_person_black_24dp"
-        android:drawablePadding="6dp"
+        android:drawablePadding="10dp"
         android:ems="10"
-        android:hint="Username"
         android:inputType="text"
         android:textSize="16sp" />
 
     <EditText
         android:id="@+id/password"
-        android:layout_width="200dp"
-        android:layout_height="30dp"
+        android:hint="Password"
+        android:layout_width="220dp"
+        android:layout_height="36dp"
         android:layout_marginTop="28dp"
-        android:paddingStart="5dp"
+        android:paddingStart="10dp"
         android:paddingEnd="5dp"
         android:focusable="true"
-        android:background="@drawable/rounded_edittext"
+        android:background="@drawable/rounded_edittext_login"
         android:drawableStart="@drawable/ic_lock_black_24dp"
-        android:drawablePadding="6dp"
+        android:drawablePadding="10dp"
         android:ems="10"
         android:inputType="textPassword"
-        android:hint="Password"
         android:textSize="16sp" />
 
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/remember_me_checkbox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingTop="10dp"
+        android:paddingVertical="20dp"
+        android:text="Remember me"
+        android:checked="false"/>
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/progress_bar"
+        style="@style/Widget.AppCompat.ProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="-10dp"
+        android:visibility="gone"/>
     <Button
         android:id="@+id/btn_login"
         android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="60dp"
         android:background="@drawable/rounded_button"
-        android:text="Login" />
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:text="Login"
+        android:clickable="true"
+        android:focusable="true"/>
 
 </LinearLayout>
