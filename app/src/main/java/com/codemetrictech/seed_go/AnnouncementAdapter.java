@@ -8,19 +8,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
-import com.codemetrictech.seed_go.fragments.Announcement;
-import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
-
-import java.util.List;
-
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
-//import com.joestelmach.natty.*;
+import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
+import com.codemetrictech.seed_go.fragments.Announcement;
 
 import java.util.HashMap;
+import java.util.List;
+
+//import com.joestelmach.natty.*;
 
 public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapter.AnnouncementViewHolder>{
 
@@ -75,8 +72,6 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                 host_activity.switchFragment(fragment);
             }
         });
-
-
     }
 
 
