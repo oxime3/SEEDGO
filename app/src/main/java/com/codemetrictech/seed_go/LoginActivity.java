@@ -7,7 +7,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -15,24 +14,17 @@ import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-
-import androidx.annotation.NonNull;
-
-import com.codemetrictech.seed_go.utility.*;
+import com.codemetrictech.seed_go.utility.InputValidator;
+import com.codemetrictech.seed_go.utility.preferences;
 import com.codemetrictech.seed_go.utility.preferences.PrefController;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
-
-
-import java.io.IOException;
-import java.util.HashMap;
-
-
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 
 public class LoginActivity extends Activity {
@@ -86,7 +78,7 @@ public class LoginActivity extends Activity {
     }
 
     private void initWidgets() {
-        session = new Session(LoginActivity.this);
+        session = new Session();
         progressBar = findViewById(R.id.progress_bar);
 
         checkBox = findViewById(R.id.remember_me_checkbox);
@@ -187,7 +179,7 @@ public class LoginActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            if (!session.isLoggedIn()){
+            if (true){
                 try {
                     Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
 
@@ -211,14 +203,14 @@ public class LoginActivity extends Activity {
 
                     if (!document.title().contains("Login to the site")) {
                         //runOnUiThread(() -> Toast.makeText(LoginActivity.this, "Logged in Successfully", Toast.LENGTH_LONG).show());
-                        session.setLoggedin(true);
-                        runOnUiThread(()->
-                        session.setSavedUsername(username.getText().toString()));
+//                        session.setLoggedin(true);
+//                        runOnUiThread(()->
+//                        session.setSavedUsername(username.getText().toString()));
 
                         is_signing_in = false;
                         updateUI();
                         goToHomePage();
-                        Log.d("SEED AUTH SUCCESS: ", session.getSavedUsername());
+                        Log.d(TAG, "SEED AUTH SUCCESS: ");
                     }
                     else {
                         runOnUiThread(() -> Toast
@@ -240,7 +232,7 @@ public class LoginActivity extends Activity {
                 is_signing_in = false;
                 updateUI();
                 goToHomePage();
-                Log.d("SEED AUTH SUCCESS: ", session.getSavedUsername());
+                Log.d(TAG, "SEED AUTH SUCCESS: ");
             }
             return null;
         }

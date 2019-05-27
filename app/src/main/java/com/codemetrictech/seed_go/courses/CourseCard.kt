@@ -9,11 +9,12 @@ import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.card_course.view.*
 
 
-class courseCard(val courseTitle:String? = "Title",
-                 val assignmentArrayList: ArrayList<String> = arrayListOf(String()),
-                 val filesArrayList: ArrayList<String> = arrayListOf(String()),
-                 var num_of_files:Int? = filesArrayList.size,
-                 var num_of_assignemnts:Int? = assignmentArrayList.size)
+class CourseCard(val courseTitle:String = "Title",
+                 val assignmentHashMap: HashMap<String, String> = HashMap(),
+                 val filesHashMap: HashMap<String, String> = HashMap(),
+                 val numOfTopics: Int = 0,
+                 var num_of_files:Int = filesHashMap.size,
+                 var num_of_assignemnts:Int = assignmentHashMap.size)
     : Item<ViewHolder>()
 {
     val TAG = "courseCard"
@@ -29,10 +30,11 @@ class courseCard(val courseTitle:String? = "Title",
     override fun bind(viewHolder: ViewHolder, position: Int) {
         val res = Resources.getSystem()
 
-
         val itemView = viewHolder.itemView
 
         itemView.textview_course_title.text = courseTitle
+        itemView.textview_course_files.text = "$num_of_files NEW FILES"
+        itemView.textview_course_assignments.text = "$num_of_assignemnts NEW ASSIGNMENTS"
 
 //        itemView.textview_course_files.text = res
 //                .getString(R.string.getString_numOfFiles, num_of_files)

@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codemetrictech.seed_go.R
-import com.codemetrictech.seed_go.courses.courseCard
+import com.codemetrictech.seed_go.courses.CourseCard
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
 
@@ -33,16 +33,16 @@ class CoursesFragment: Fragment(){
             adapter = courseGroupAdapter
         }
 
-        addCourse("SWEN3000: IOS Development")
-        addCourse("SWEN3004: Web and Mobile II")
-        addCourse("SWEN3156: Software Testing")
-        addCourse("SWEN3002: Android Development")
+//        addCourse("SWEN3000: IOS Development")
+//        addCourse("SWEN3004: Web and Mobile II")
+//        addCourse("SWEN3156: Software Testing")
+//        addCourse("SWEN3002: Android Development")
 
+        //CourseContentGrabber()
     }
 
-    fun addCourse(courseTitle: String?){
-        var course = courseCard(courseTitle)
-        courseGroupAdapter.add(course)
+    fun addCourse(courseCard: CourseCard){
+        courseGroupAdapter.add(courseCard)
     }
 
     companion object courseFragmentCompanion{

@@ -1,37 +1,19 @@
 package com.codemetrictech.seed_go;
 
-import android.content.Context;
-import android.content.SharedPreferences;
+import java.util.HashMap;
 
-public class Session {
-    private SharedPreferences sp;
-    private SharedPreferences.Editor editor;
-    private Context context;
+class Session {
+    private HashMap cookies = new HashMap<>();
 
-    Session(Context context){
-        this.context = context;
-        sp = context.getSharedPreferences("swen_forums", Context.MODE_PRIVATE);
-        editor = sp.edit();
+    Session() { }
 
+    HashMap getCookies() {
+        return this.cookies;
     }
 
-    void setLoggedin(boolean isLoggedIn){
-        editor.putBoolean("loggedInMode", isLoggedIn);
-        editor.commit();
+    void setCookies(HashMap cookies) {
+        this.cookies = cookies;
     }
 
-    public boolean isLoggedIn(){
-        return sp.getBoolean("loggedInMode", false);
-    }
-
-
-    void setSavedUsername(String username){
-        editor.putString("UserID", username);
-        editor.commit();
-    }
-
-    public String getSavedUsername(){
-        return sp.getString("UserID", "User Not Logged In");
-    }
 
 }

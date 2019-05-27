@@ -17,6 +17,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import com.codemetrictech.seed_go.courses.CourseContentGrabber;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 import com.codemetrictech.seed_go.fragments.CoursesFragment;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -42,6 +43,7 @@ public class MainActivity extends AppCompatActivity implements
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
 //        Toolbar toolbar = findViewById(R.id.toolbar);
 //        setSupportActionBar(toolbar);
@@ -69,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements
         Fragment frag1 = AnnouncementsFragment.newInstance();
 //        Fragment frag2 = CoursesFragment_beta.newInstance();
         Fragment frag2 = new CoursesFragment();
+        CourseContentGrabber courseContentGrabber = new CourseContentGrabber((CoursesFragment) frag2);
 
         FragmentList.add(frag1);
         FragmentList.add(frag2);
