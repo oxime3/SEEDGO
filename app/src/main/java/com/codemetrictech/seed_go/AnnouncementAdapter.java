@@ -1,6 +1,8 @@
 package com.codemetrictech.seed_go;
 
+import android.app.Activity;
 import android.content.Context;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,12 +24,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashMap;
 
+import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
+
 public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapter.AnnouncementViewHolder>{
 
     private Context mContext;
     private Announcement announcement;
     private List<Announcement> announcementList;
     MainActivity host_activity;
+    DatabaseHelper dbhelper;
 
     String url = "http://seed.gist-edu.cn/mod/forum/view.php?f=12&showall=1";
 
@@ -46,6 +51,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
     public AnnouncementAdapter(Context mContext, List<Announcement> announcementList) {
         this.mContext = mContext;
         this.announcementList = announcementList;
+        this.host_activity = (MainActivity)mContext;
     }
 
 
@@ -55,12 +61,14 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
         LayoutInflater inflater = LayoutInflater.from(mContext);
         View view = inflater.inflate(R.layout.announcement_preview, null);
         AnnouncementViewHolder holder = new AnnouncementViewHolder(view);
+        dbhelper = new DatabaseHelper(mContext);
 
         return new AnnouncementViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
+        //holder.setIsRecyclable(false);
         Announcement announcement = announcementList.get(position);
 
         holder.post_title.setText((announcement.getPost_title()));
@@ -68,11 +76,32 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
         holder.readmore_button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View view) {
 
-                Fragment fragment = new AnnouncementFragment();
-                Bundle bundle = new Bundle();
-                bundle.putString("url", announcement.getLink());
-                fragment.setArguments(bundle);
-                host_activity.switchFragment(fragment);
+                //add announcement's id and seen status to database.
+                System.out.println("ADAPTER: READ ANNOUNCEMENT ID: " + announcement.getId());
+                Cursor result = dbhelper.getAllData();
+                System.out.println("DB COUNT IN ADAPTER:" + result.getCount());
+                boolean seen = true;
+                while (result.moveToNext()){
+                    String seen_id = result.getString(result.getColumnIndex(col_1));
+                    System.out.println("LOOP THROUGH DB VALUE: " + seen_id);
+                    if (announcement.getId().equals(seen_id)) {
+                        //don't add
+                        System.out.println("LOOP THROUGH VALUE ALREADY IN DB: " + seen_id);
+                    }else
+                        seen = false;
+                }
+                if (!seen) {
+                    boolean isInserted = dbhelper.insertData(announcement.getId());
+                    if (isInserted != true) {
+                        System.out.println("ADAPTER: READ ANNOUNCEMENT NOT ADDED TO DB" + announcement.getId());
+                    }
+                }
+
+//                Fragment fragment = new AnnouncementFragment();
+//                Bundle bundle = new Bundle();
+//                bundle.putString("url", announcement.getLink());
+//                fragment.setArguments(bundle);
+//                host_activity.switchFragment(fragment);
             }
         });
 
@@ -97,6 +126,16 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
     @Override
     public int getItemCount() {
         return announcementList.size();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
     }
 
 
