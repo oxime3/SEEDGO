@@ -8,17 +8,16 @@ public class Announcement {
     Integer seen;
 
 
-    public Announcement(String post_title, String post_date, Integer seen, String id, String link) {
+    public Announcement(String post_title, String post_date, String id, String link) {
         this.post_title = post_title;
         this.post_date = post_date;
-        this.seen = seen;
         this.id = id;
         this.link = link;
     }
 
-    public Announcement(String id, Integer seen){
+
+    public Announcement(String id){
         this.id = id;
-        this.seen = seen;
     }
 
     public Announcement(){}
