@@ -101,6 +101,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
 
                 Fragment fragment = new AnnouncementFragment();
                 Bundle bundle = new Bundle();
+                System.out.println("URL PASSED: " + announcement.getLink());
                 bundle.putString("url", announcement.getLink());
                 fragment.setArguments(bundle);
                 host_activity.switchFragment(fragment);
