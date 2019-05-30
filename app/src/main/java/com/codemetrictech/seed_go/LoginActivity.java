@@ -32,8 +32,8 @@ public class LoginActivity extends Activity {
     private ProgressBar progressBar;
     private Button btn_login;
 
-    private boolean isValidUsername;
-    private Boolean isValidPassword;
+    private boolean isValidUsername = true;
+    private Boolean isValidPassword = true;
     private boolean isSigningIn;
     public static Session session;
     private PrefController prefController = Preferences.PrefController;
@@ -227,7 +227,7 @@ public class LoginActivity extends Activity {
             updateUI();
             setUserPreferences();
 
-            if (isValidUsername && isValidPassword) {
+            if (!session.getCookies().isEmpty()) {
                 finish();
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
             }
