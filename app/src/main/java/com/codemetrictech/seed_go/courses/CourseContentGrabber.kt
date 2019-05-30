@@ -1,17 +1,18 @@
 package com.codemetrictech.seed_go.courses
 
+import android.content.Context
 import android.os.AsyncTask
+import android.os.Bundle
 import android.util.Log
 import com.codemetrictech.seed_go.fragments.CoursesFragment
+import com.xwray.groupie.ExpandableGroup
 import org.jsoup.Connection
 import org.jsoup.Jsoup
-import java.util.*
-import kotlin.collections.ArrayList
 
-class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, Void, Void>(){
+class CourseContentGrabber(val context: Context,
+                           val hostFragment: CoursesFragment) : AsyncTask<Void, Bundle, Void>(){
 
     private val TAG = "Course Content Grabber"
-
     private var courseContentURL = "http://seed.gist-edu.cn/my/"
     private val USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127"
     private var url_login = "http://seed.gist-edu.cn/login/index.php"
@@ -21,7 +22,7 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
     private var cookies = HashMap<String, String>()
     private var credentials = HashMap<String, String>()
 
-    private var coursesList = ArrayList<CourseCard>()
+    private var coursesList = ArrayList<ExpandableCourseCard>()
 
 
     init {
@@ -30,6 +31,7 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
     }
 
     override fun doInBackground(vararg params: Void?): Void? {
+
         val loginForm = Jsoup
                 .connect(url_login)
                 .method(Connection.Method.GET)
@@ -64,6 +66,7 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
 
         //fetch course titles and container URL.
         for (i in 0 until numOfCourses){
+            val progressBundle = Bundle()
             val filesMap = HashMap<String, String>()
             val assignmentsMap = HashMap<String, String>()
 
@@ -75,8 +78,7 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
 
             val unformattedTitle = courseInfo.get("title")
             val formattedTitle = formatTitle(unformattedTitle)
-
-            println("TITLE: $formattedTitle")
+            Log.d(TAG, "Course found: $formattedTitle")
 
             val containerURL = courseInfo.get("href")
 
@@ -87,6 +89,7 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
 
             val numOfTopics = courseContainer.select("h3[class=sectionname]").size
 
+
 //            var hrefQuery = """a[class=""]"""
             val containerElement = courseContainer
                     .select("div[class=activityinstance]")
@@ -95,14 +98,20 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
 
             containerElement.forEach {
                 val elementIdentity = it.text()
+                var elementURL = String()
+
+                if(it.hasAttr("href")){
+                    elementURL = it.attributes()["href"]
+                }
 
                 if (elementIdentity.contains("File")){
-                    var fileName = elementIdentity.replace("File", "")
-                    var fileURL = it.attributes()["href"]
+                    val fileName = elementIdentity.replace("File", "")
+                    val fileURL = elementURL
                     filesMap[fileName] = fileURL
 
-                } else if(elementIdentity.contains("Assignment")){
-                    if(elementIdentity.contains("exercise", ignoreCase = true)){
+                } else if(elementIdentity.contains("Assignment", true)){
+                    println("ELEMENT: $elementIdentity")
+                    if(elementIdentity.contains("exercise", true)){
                         val assignmentName = "Weekly Exercise"
                         assignmentsMap[assignmentName] = it.attributes()["href"]
                         val test = it.attributes()["href"]
@@ -110,14 +119,44 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
                     }
                 }
             }
-            coursesList.add(CourseCard(formattedTitle, assignmentsMap, filesMap, numOfTopics))
-        }
+            progressBundle.putString("courseTitle", formattedTitle)
+            progressBundle.putInt("numOfTopics", numOfTopics)
+            progressBundle.putSerializable("filesMap", filesMap)
+            progressBundle.putSerializable("assignmentsMap", assignmentsMap)
 
+            publishProgress(progressBundle)
+            //coursesList.add(ExpandableCourseCard(formattedTitle, assignmentsMap, filesMap, numOfTopics))
+        }
 
         Log.d(TAG, "$numOfCourses Courses found.")
 
         return null
+    }
 
+    override fun onProgressUpdate(vararg values: Bundle?) {
+        val resultBundle = values.getOrNull(0)!!
+
+        val courseTitle = resultBundle.getString("courseTitle")!!
+        val assignmentMap = resultBundle.getSerializable("assignmentsMap") as HashMap<String, String>
+        val filesMap = resultBundle.getSerializable("filesMap") as HashMap<String, String>
+        val numOfTopics = resultBundle.getInt("numberOfTopics")
+
+        val expandableDataSection = ExpandableDataSection("Week 1", filesMap, assignmentMap)
+        filesMap.entries.forEach {
+            println("IT IS: $it")
+            println("key: ${it.key}\nvalue: ${it.value}\nContext is null?: $context")
+            val fileObj = FileObj(context!!, credentials, it.key, it.value)
+            expandableDataSection.getSection().add(fileObj)
+        }
+
+        val courseCard = ExpandableCourseCard(courseTitle, filesMap.size, assignmentMap.size, numOfTopics)
+        courseCard.getSection().add(ExpandableGroup(expandableDataSection))
+
+        hostFragment.addCourse(courseCard)
+
+        Log.d(TAG, "onProgressUpdate()")
+
+        super.onProgressUpdate(*values)
     }
 
     private fun formatTitle(unformattedTitle: CharSequence): String{
@@ -150,7 +189,9 @@ class CourseContentGrabber(val hostFragment: CoursesFragment) : AsyncTask<Void, 
     }
 
     override fun onPostExecute(result: Void?) {
-        coursesList.forEach { hostFragment.addCourse(it) }
+        //coursesList.forEach { hostFragment.addCourse(it) }
         super.onPostExecute(result)
     }
+
+
 }

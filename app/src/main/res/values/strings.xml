@@ -11,4 +11,5 @@
     <!--COURSES-->
     <string name="getString_numOfFiles">%d NEW FILES UPLOADED</string>
     <string name="getString_numOfAssignments">%d NEW ASSIGNMENTS UPLOADED</string>
+    <string name="files_word">FILES</string>
 </resources>

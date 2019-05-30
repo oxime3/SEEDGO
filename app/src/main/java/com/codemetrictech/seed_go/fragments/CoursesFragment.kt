@@ -8,9 +8,11 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.codemetrictech.seed_go.R
-import com.codemetrictech.seed_go.courses.CourseCard
+import com.codemetrictech.seed_go.courses.ExpandableCourseCard
+import com.xwray.groupie.ExpandableGroup
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.fragment_courses.view.*
 
 class CoursesFragment: Fragment(){
     val TAG = "Courses"
@@ -24,25 +26,19 @@ class CoursesFragment: Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.progress_bar.show()
         super.onViewCreated(view, savedInstanceState)
-
          coursesRecyclerView = view.findViewById(R.id.recyclerView_fragment_courses)
 
         coursesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = courseGroupAdapter
         }
-
-//        addCourse("SWEN3000: IOS Development")
-//        addCourse("SWEN3004: Web and Mobile II")
-//        addCourse("SWEN3156: Software Testing")
-//        addCourse("SWEN3002: Android Development")
-
-        //CourseContentGrabber()
     }
 
-    fun addCourse(courseCard: CourseCard){
-        courseGroupAdapter.add(courseCard)
+    fun addCourse(expandableCourseCard: ExpandableCourseCard){
+        courseGroupAdapter.add(ExpandableGroup(expandableCourseCard))
+        view?.progress_bar?.hide()
     }
 
     companion object courseFragmentCompanion{
