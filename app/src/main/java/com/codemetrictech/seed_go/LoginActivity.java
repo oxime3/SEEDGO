@@ -109,7 +109,7 @@ public class LoginActivity extends Activity {
             if (isValidUsername && isValidPassword) {
                 isSigningIn = true;
                 updateUI();
-                new Login(LoginActivity.this).execute();
+                new Login().execute();
             } else {
                 Snackbar.make(view, "Please check your form.", Snackbar.LENGTH_LONG)
                         .setDuration(3000)
@@ -162,12 +162,6 @@ public class LoginActivity extends Activity {
 
         private HashMap<String, String> cookies = new HashMap<>();
         private HashMap<String, String> credentials = new HashMap<>();
-
-        private Activity activity;
-
-        Login(Activity activity) {
-            this.activity = activity;
-        }
 
         @Override
         protected void onPreExecute() {
