@@ -29,6 +29,6 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:src="@drawable/ic_file_download_black_24dp" />
+        android:src="@drawable/vector_download" />
 
 </LinearLayout>

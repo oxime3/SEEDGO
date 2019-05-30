@@ -39,14 +39,14 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
     public static Integer id = 0;
     String status = "";
 
-    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
-    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
-    String username = "UWI180913";
-    String password = "C1555480@G!C";
+//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
+//    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
+//    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
+//    String username = "UWI180913";
+//    String password = "C1555480@G!C";
 
-    HashMap<String, String> cookies = new HashMap<>();
-    HashMap<String, String> formData = new HashMap<>();
+//    HashMap<String, String> cookies = new HashMap<>();
+//    HashMap<String, String> formData = new HashMap<>();
 
     public AnnouncementAdapter(Context mContext, List<Announcement> announcementList) {
         this.mContext = mContext;

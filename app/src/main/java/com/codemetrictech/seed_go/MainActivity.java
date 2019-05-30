@@ -1,36 +1,27 @@
 package com.codemetrictech.seed_go;
 
-import com.google.android.gms.vision.barcode.Barcode;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.tabs.TabLayout;
-
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.fragment.app.FragmentTransaction;
-import androidx.viewpager.widget.ViewPager;
-
-import android.content.Context;
-
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.AttributeSet;
 import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-
-import android.widget.TabHost;
-import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.codemetrictech.seed_go.fragments.*;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager.widget.ViewPager;
+
+import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
+import com.codemetrictech.seed_go.fragments.CoursesFragment;
+import com.google.android.gms.vision.barcode.Barcode;
+import com.google.android.material.tabs.TabLayout;
 import com.notbytes.barcode_reader.BarcodeReaderFragment;
 
 import java.util.ArrayList;
@@ -38,7 +29,6 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements
         AnnouncementsFragment.OnFragmentInteractionListener,
-        CoursesFragment.OnFragmentInteractionListener,
         BarcodeReaderFragment.BarcodeReaderListener
 {
 
@@ -78,14 +68,16 @@ public class MainActivity extends AppCompatActivity implements
     private void initFragmentTabs(){
         FragmentList = new ArrayList<>();
         Fragment frag1 = AnnouncementsFragment.newInstance();
-        Fragment frag2 = CoursesFragment.newInstance();
+//        Fragment frag2 = CoursesFragment_beta.newInstance();
+        Fragment frag2 = new CoursesFragment();
 
         FragmentList.add(frag1);
         FragmentList.add(frag2);
         TotalFragments = FragmentList.size();
 
         String tab1_title = ((AnnouncementsFragment)FragmentList.get(0)).getFragmentTitle();
-        String tab2_title = ((CoursesFragment)FragmentList.get(1)).getFragmentTitle();
+        String tab2_title = ((CoursesFragment)FragmentList.get(1)).getTAG();
+//        String tab2_title = ((CoursesFragment_beta)FragmentList.get(1)).getFragmentTitle();
         mTabLayout.addTab(mTabLayout.newTab().setText(tab1_title));
         mTabLayout.addTab(mTabLayout.newTab().setText(tab2_title));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -94,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
                 mViewPager.setCurrentItem(tab.getPosition(), true);
+                mTabLayout.setTabMode(TabLayout.MODE_SCROLLABLE);
             }
 
             @Override

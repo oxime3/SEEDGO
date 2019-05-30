@@ -60,6 +60,9 @@ import java.util.List;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
 
+import static com.codemetrictech.seed_go.LoginActivity.session;
+
+
 public class AnnouncementsFragment extends Fragment {
 
     RecyclerView unread;
@@ -84,12 +87,12 @@ public class AnnouncementsFragment extends Fragment {
     Integer seen = 0;
     public static Integer id = 0;
 
-
-    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
-    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
-    String username = "UWI180913";
-    String password = "C1555480@G!C";
+//
+//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
+//    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
+//    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
+//    String username = "UWI180913";
+//    String password = "C1555480@G!C";
 
     HashMap<String, String> cookies = new HashMap<>();
     HashMap<String, String> formData = new HashMap<>();
@@ -234,25 +237,25 @@ public class AnnouncementsFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            try {
-                System.out.println("BACKGROUND OP STARTED");
-                Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-
-                cookies.putAll(loginForm.cookies());
-                formData.put("username", username);
-                formData.put("password", password);
-
-                Connection.Response homepage = Jsoup.connect(loginActionUrl)
-                        .cookies(cookies)
-                        .data(formData)
-                        .method(Connection.Method.POST)
-                        .userAgent(USER_AGENT)
-                        .execute();
-
-                System.out.println("LOGGING IN");
-
-                cookies.clear();
-                cookies.putAll(homepage.cookies());
+//            try {
+//                System.out.println("BACKGROUND OP STARTED");
+//                Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
+//
+//                cookies.putAll(loginForm.cookies());
+//                formData.put("username", username);
+//                formData.put("password", password);
+//
+//                Connection.Response homepage = Jsoup.connect(loginActionUrl)
+//                        .cookies(cookies)
+//                        .data(formData)
+//                        .method(Connection.Method.POST)
+//                        .userAgent(USER_AGENT)
+//                        .execute();
+//
+//                System.out.println("LOGGING IN");
+//
+//                cookies.clear();
+//                cookies.putAll(homepage.cookies());
 
 
 //              Get from db
@@ -279,8 +282,10 @@ public class AnnouncementsFragment extends Fragment {
 //                    Document mBlogDocument = mBlog.parse();
                     Document doc = Jsoup
                             .connect(url)
+
                             .cookies(cookies)
                             //.cookies(session.getCookies())
+
                             .get();
 
 
@@ -311,11 +316,7 @@ public class AnnouncementsFragment extends Fragment {
                                 mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);
                                 System.out.println("UPLOAD DATE" + mBlogUploadDate);
                                 // Get the third td
-                                //no id tag from this url
-                                //Elements mElementBlogId = tds.select("td[class=lastpost]").select("a[href]");
-                                Elements mElementBlogId = tds.select("a[href]");
                                 String link = tds.select("td[class=topic starter]").select("a").attr("href");
-                                //String link = mElementBlogId.text().toString();
                                 System.out.println("BLOG ID HREF" + link);
                                 //gte last 6 values of string for the ID
                                 mBlogId = link;
@@ -344,9 +345,9 @@ public class AnnouncementsFragment extends Fragment {
                     System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
                 }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             return null;
         }
 
@@ -376,6 +377,7 @@ public class AnnouncementsFragment extends Fragment {
 
         }
 
+
         public boolean recordExists(Cursor cursor, String id) {
             boolean status = true;
             while (cursor.moveToNext()){
@@ -400,7 +402,10 @@ public class AnnouncementsFragment extends Fragment {
 
             AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
             read.setAdapter(adapter2);
+
+
         }
+
 
     }
 }
