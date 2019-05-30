@@ -1,5 +1,7 @@
 package com.codemetrictech.seed_go.announcement;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,6 +34,8 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
+import static com.codemetrictech.seed_go.LoginActivity.session;
+
 
 public class AnnouncementFragment extends Fragment {
     private TextView announcement_title;
@@ -40,7 +44,8 @@ public class AnnouncementFragment extends Fragment {
     private TextView body_text;
     private ListView attachment_list;
 
-    //private String url;
+    private Activity activity;
+    private String url;
     private String author;
     private String datetime;
     private String title;
@@ -49,18 +54,14 @@ public class AnnouncementFragment extends Fragment {
     private HashMap<Integer, List<String>> files = new HashMap<>();
 
 
-    //String url = "http://seed.gist-edu.cn/mod/forum/discuss.php?d=3275";
-    String url = "http://seed.gist-edu.cn/mod/forum/discuss.php?d=3310";
-
-    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-    String url_login = "http://seed.gist-edu.cn/login/index.php";
-    String username = "UWI180908";
-    String password = "A4034445@G!C";
-
-    HashMap<String, String> cookies = new HashMap<>();
-    HashMap<String, String> credentials = new HashMap<>();
-
     static Fragment newInstance() { return new AnnouncementFragment();
+    }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity)
+            activity = (Activity) context;
     }
 
 
@@ -72,7 +73,6 @@ public class AnnouncementFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        //url = getArguments().getString("url");
         new JsoupAsyncTask().execute();
     }
 
@@ -81,6 +81,7 @@ public class AnnouncementFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            url = getArguments().getString("url");
             announcement_title = getView().findViewById(R.id.announcement_title);
             announcement_author_datetime = getView().findViewById(R.id.announcement_author_datetime);
             announcement_body = getView().findViewById(R.id.announcement_body);
@@ -92,31 +93,10 @@ public class AnnouncementFragment extends Fragment {
         protected Void doInBackground(Void... params) {
             try {
 
-                Connection.Response loginForm = Jsoup
-                        .connect(url_login)
-                        .method(Connection.Method.GET)
-                        .userAgent(USER_AGENT)
-                        .execute();
-
-                cookies.putAll(loginForm.cookies());
-                credentials.put("username", username);
-                credentials.put("password", password);
-
-                Connection.Response homepage = Jsoup
-                        .connect(url_login)
-                        .cookies(cookies)
-                        .data(credentials)
-                        .method(Connection.Method.POST)
-                        .userAgent(USER_AGENT)
-                        .execute();
-
-                cookies.clear();
-                cookies.putAll(homepage.cookies());
-
-                // Connect to the website
+                // Connect to the web page
                 Document announcement = Jsoup
                         .connect(url)
-                        .cookies(cookies)
+                        .cookies(session.getCookies())
                         .get();
 
                 // Using Elements to get the Meta data
@@ -145,15 +125,15 @@ public class AnnouncementFragment extends Fragment {
                     Elements mElementTable = mElementPostBody.select("table");
                     if (mElementTable.isEmpty())
                         body = mElementPostBody.text();
-                    else
+                    else {
                         body = mElementPostBody.select("p").first().text();
-                    getActivity().runOnUiThread(() -> populateTable(mElementTable));
+                        activity.runOnUiThread(() -> populateTable(mElementTable));
+                    }
 
                     // Checking for attachments
                     Elements mElementAttachments = announcement.select("div[class=attachments]");
-                    if (!mElementAttachments.isEmpty()) retrieveAttachments(mElementAttachments.first());
-
-
+                    if (!mElementAttachments.isEmpty())
+                        retrieveAttachments(mElementAttachments.first());
                 }
 
             }
@@ -166,7 +146,7 @@ public class AnnouncementFragment extends Fragment {
         private void populateTable(Elements table_elements) {
             boolean hasRowSpan = false;
 
-            TableLayout table = new TableLayout(getActivity());
+            TableLayout table = new TableLayout(activity);
             table.setLayoutParams(new TableLayout.LayoutParams());
 
             TableRow.LayoutParams tableRowParams = new TableRow.LayoutParams();
@@ -175,7 +155,7 @@ public class AnnouncementFragment extends Fragment {
 
             Elements table_rows = table_elements.select("tr");
             for (Element table_row : table_rows) {
-                TableRow row = new TableRow(getActivity());
+                TableRow row = new TableRow(activity);
                 row.setBackgroundColor(Color.LTGRAY);
 
                 Elements table_cols = table_row.select("td");
@@ -218,7 +198,7 @@ public class AnnouncementFragment extends Fragment {
         }
 
         private TextView createCell (String text, TableRow.LayoutParams params) {
-            TextView cell = new TextView(getActivity());
+            TextView cell = new TextView(activity);
             cell.setText(text);
             cell.setTextIsSelectable(true);
             cell.setBackgroundColor(Color.parseColor("#FAFAFA"));
@@ -248,19 +228,6 @@ public class AnnouncementFragment extends Fragment {
                     row.addView(createCell(value, params), y);
                 }
             }
-/*
-            IntStream.range(2, rows).forEach(n -> {
-                TableRow row = (TableRow) table.getChildAt(n);
-                int cells = row.getChildCount();
-
-                if (cells < cols) {
-                    List<Object> object = table_values.get(n);
-                    String value = (String) object.get(0);
-                    int y = (int) object.get(1);
-                    row.addView(createCell(value, params), y);
-                }
-            });
-*/
         }
 
         private void retrieveAttachments(Element element) {
@@ -278,17 +245,6 @@ public class AnnouncementFragment extends Fragment {
                 files.put(iterations, new ArrayList<>(Arrays.asList(file_name, file_src)));
                 iterations++;
             }
-/*
-            for (Element e : element.children().select("a:eq(1)")) {
-                String file_name = e.text();
-                String file_src = e.attr("href");  // Gets the link
-
-                files.put(iterations, new ArrayList<>(Arrays.asList(file_name, file_src)));
-                iterations++;
-            }
-*/
-
-
         }
 
 
@@ -308,7 +264,7 @@ public class AnnouncementFragment extends Fragment {
 
             body_text.setText(body);
 
-            attachment_list.setAdapter(new CustomListViewAdapter(getActivity(), files, credentials));
+            attachment_list.setAdapter(new CustomListViewAdapter(activity, files));
 
         }
 

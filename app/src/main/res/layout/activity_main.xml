@@ -14,7 +14,6 @@
         android:id="@+id/appbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/appbar_padding_top"
         android:theme="@style/AppTheme.AppBarOverlay">
 
         <androidx.appcompat.widget.Toolbar
@@ -22,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:layout_weight="1"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/colorPrimaryDark"
             app:layout_scrollFlags="scroll|enterAlways"
             app:popupTheme="@style/AppTheme.PopupOverlay"
             app:title="@string/app_name">
@@ -33,23 +32,18 @@
             android:id="@+id/tab_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/light_gray"
-            app:tabBackground="@drawable/tab_selector"
             android:minHeight="?actionBarSize"
-            app:tabIndicatorColor="@color/colorPrimary"
             android:theme="@style/Base.ThemeOverlay.AppCompat.Dark"
+            app:tabBackground="@drawable/tab_selector"
+            app:tabIndicatorColor="@color/colorPrimaryDark"
         />
 
     </com.google.android.material.appbar.AppBarLayout>
-    
-
 
     <androidx.viewpager.widget.ViewPager
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
-
- 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
