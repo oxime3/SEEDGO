@@ -15,6 +15,8 @@ import android.widget.ProgressBar;
 
 import com.codemetrictech.seed_go.utils.*;
 import com.codemetrictech.seed_go.utils.Preferences.PrefController;
+
+import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
@@ -23,7 +25,6 @@ import java.util.HashMap;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-
 
 public class LoginActivity extends Activity {
     private EditText username;
@@ -37,7 +38,6 @@ public class LoginActivity extends Activity {
     private boolean isSigningIn;
     public static Session session;
     private PrefController prefController = Preferences.PrefController;
-
     private final String TAG = "--- LOGIN";
 
     @Override
@@ -47,7 +47,6 @@ public class LoginActivity extends Activity {
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         initWidgets();
         checkUserPreferences();
-
     }
 
     private void initWidgets() {
@@ -62,6 +61,7 @@ public class LoginActivity extends Activity {
             String inputName = username.getText().toString();
             if (!inputName.isEmpty()) {
                 isValidUsername = InputValidator.Companion.validateUsername(inputName);
+
                 if (!isValidUsername) {
                     username.setError("Invalid username.");
                 }
@@ -77,6 +77,7 @@ public class LoginActivity extends Activity {
                 keyboard.hideSoftInputFromWindow(password.getWindowToken(), 0);
 
             String pass = password.getText().toString();
+
             if (!pass.isEmpty()) {
                 isValidPassword = InputValidator.Companion.validatePassword(pass);
                 if (!isValidPassword) {
@@ -108,7 +109,7 @@ public class LoginActivity extends Activity {
             if (isValidUsername && isValidPassword) {
                 isSigningIn = true;
                 updateUI();
-                new Login().execute();
+                new Login(LoginActivity.this).execute();
             } else {
                 Snackbar.make(view, "Please check your form.", Snackbar.LENGTH_LONG)
                         .setDuration(3000)
@@ -133,7 +134,7 @@ public class LoginActivity extends Activity {
     }
 
     public void setUserPreferences() {
-        if(checkBox.isChecked()){
+        if(checkBox.isChecked()) {
             prefController.setUserName(getApplicationContext(), username.getText().toString());
             username.clearFocus();
             password.requestFocus();
@@ -161,6 +162,15 @@ public class LoginActivity extends Activity {
 
         private HashMap<String, String> cookies = new HashMap<>();
         private HashMap<String, String> credentials = new HashMap<>();
+
+        private HashMap<String, String> cookies = new HashMap<>();
+        private HashMap<String, String> credentials = new HashMap<>();
+
+        private Activity activity;
+
+        Login(Activity activity) {
+            this.activity = activity;
+        }
 
         @Override
         protected void onPreExecute() {
@@ -200,7 +210,7 @@ public class LoginActivity extends Activity {
                     Snackbar.make(findViewById(R.id.form_login), "Logged in Successfully", Snackbar.LENGTH_LONG)
                             .setDuration(3000)
                             .show();
-
+                  
                     isSigningIn = false;
                     session.setCookies(cookies);
                 }
@@ -212,7 +222,6 @@ public class LoginActivity extends Activity {
             }
             catch (IOException ioe) {
                 isSigningIn = false;
-
                 Snackbar.make(findViewById(R.id.form_login), "Connection Error.", Snackbar.LENGTH_LONG)
                         .setDuration(3000)
                         .show();

@@ -3,12 +3,11 @@ package com.codemetrictech.seed_go.utils
 import android.content.Context
 import android.preference.PreferenceManager
 
-
 class Preferences {
 
-    companion object PrefController{
+    companion object PrefController {
 
-        //LOGIN ID
+        // LOGIN ID
         private const val LOGIN_COUNT_ID = "com.codemetrictech.seed_go.login_count"
 
         fun setLoginCount(context: Context, value: Int){
@@ -22,7 +21,7 @@ class Preferences {
             return preferences.getInt(LOGIN_COUNT_ID, 0)
         }
 
-        //REMEMBER ME
+        // REMEMBER ME
         private const val REMEMBER_ME_ID = "com.codemetrictech.seed_go.remember_me"
 
         fun setRememberMe(context: Context, value: Boolean){
@@ -35,8 +34,8 @@ class Preferences {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             return preferences.getBoolean(REMEMBER_ME_ID,false)
         }
-
-        //USERNAME
+      
+        // USERNAME
         private const val USER_NAME_ID = "com.codemetrictech.seed_go.user_name"
 
         fun setUserName(context: Context, value: String){
@@ -50,7 +49,7 @@ class Preferences {
             return preferences.getString(USER_NAME_ID, "")
         }
 
-        //UserPassword
+        // PASSWORD
         private const val USER_PASSWORD_ID = "com.codemetrictech.seed_go.user_password"
 
         fun setUserPassword(context: Context, value: String){
@@ -63,8 +62,6 @@ class Preferences {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             return preferences.getString(USER_PASSWORD_ID, "")
         }
-
-
     }
 }
 
