@@ -313,11 +313,7 @@ public class AnnouncementsFragment extends Fragment {
                                 mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);
                                 System.out.println("UPLOAD DATE" + mBlogUploadDate);
                                 // Get the third td
-                                //no id tag from this url
-                                //Elements mElementBlogId = tds.select("td[class=lastpost]").select("a[href]");
-                                Elements mElementBlogId = tds.select("a[href]");
                                 String link = tds.select("td[class=topic starter]").select("a").attr("href");
-                                //String link = mElementBlogId.text().toString();
                                 System.out.println("BLOG ID HREF" + link);
                                 //gte last 6 values of string for the ID
                                 mBlogId = link;
@@ -373,11 +369,8 @@ public class AnnouncementsFragment extends Fragment {
                     else
                         unreadannouncementList.add(announcement);
                 }
-
             }
-
         }
-
         public boolean recordExists(Cursor cursor, String id) {
             boolean status = true;
             while (cursor.moveToNext()){
@@ -386,7 +379,6 @@ public class AnnouncementsFragment extends Fragment {
                 if (id.equals(seen_id))
                     status = true;
                 return status;
-
             }
             status = false;
 
@@ -402,7 +394,14 @@ public class AnnouncementsFragment extends Fragment {
 
             AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
             read.setAdapter(adapter2);
+
+//            adapter.notifyDataSetChanged();
+//            adapter2.notifyDataSetChanged();
+//
+//            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
+//            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
         }
+
 
     }
 }
