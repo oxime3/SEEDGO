@@ -59,6 +59,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
+
 import static com.codemetrictech.seed_go.LoginActivity.session;
 
 
@@ -281,8 +282,10 @@ public class AnnouncementsFragment extends Fragment {
 //                    Document mBlogDocument = mBlog.parse();
                     Document doc = Jsoup
                             .connect(url)
-                            //.cookies(cookies)
-                            .cookies(session.getCookies())
+
+                            .cookies(cookies)
+                            //.cookies(session.getCookies())
+
                             .get();
 
 
@@ -369,8 +372,12 @@ public class AnnouncementsFragment extends Fragment {
                     else
                         unreadannouncementList.add(announcement);
                 }
+
             }
+
         }
+
+
         public boolean recordExists(Cursor cursor, String id) {
             boolean status = true;
             while (cursor.moveToNext()){
@@ -379,6 +386,7 @@ public class AnnouncementsFragment extends Fragment {
                 if (id.equals(seen_id))
                     status = true;
                 return status;
+
             }
             status = false;
 
@@ -395,11 +403,7 @@ public class AnnouncementsFragment extends Fragment {
             AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
             read.setAdapter(adapter2);
 
-//            adapter.notifyDataSetChanged();
-//            adapter2.notifyDataSetChanged();
-//
-//            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
-//            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
+
         }
 
 
