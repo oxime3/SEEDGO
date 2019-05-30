@@ -2,16 +2,18 @@ package com.codemetrictech.seed_go;
 
 import java.util.HashMap;
 
-class Session {
+public class Session {
     private HashMap cookies = new HashMap<>();
 
-    Session() { }
+    public Session() {
 
-    HashMap getCookies() {
+    }
+
+    public HashMap getCookies() {
         return this.cookies;
     }
 
-    void setCookies(HashMap cookies) {
+    public void setCookies(HashMap cookies) {
         this.cookies = cookies;
     }
 
