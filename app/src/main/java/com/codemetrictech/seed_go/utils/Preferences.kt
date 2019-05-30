@@ -1,10 +1,10 @@
-package com.codemetrictech.seed_go.utility
+package com.codemetrictech.seed_go.utils
 
 import android.content.Context
 import android.preference.PreferenceManager
 
 
-class preferences() {
+class Preferences {
 
     companion object PrefController{
 
@@ -34,20 +34,6 @@ class preferences() {
         fun getRememberMe(context: Context): Boolean {
             val preferences = PreferenceManager.getDefaultSharedPreferences(context)
             return preferences.getBoolean(REMEMBER_ME_ID,false)
-        }
-
-        //EMAIL
-        private const val USER_EMAIL_ID = "com.codemetrictech.seed_go.user_email"
-
-        fun setUserEmail(context: Context, value: String){
-            val editor = PreferenceManager.getDefaultSharedPreferences(context).edit()
-            editor.putString(USER_EMAIL_ID, value)
-            editor.apply()
-        }
-
-        fun getUserEmail(context: Context): String? {
-            val preferences = PreferenceManager.getDefaultSharedPreferences(context)
-            return preferences.getString(USER_EMAIL_ID, "")
         }
 
         //USERNAME
