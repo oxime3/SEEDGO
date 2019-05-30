@@ -163,9 +163,6 @@ public class LoginActivity extends Activity {
         private HashMap<String, String> cookies = new HashMap<>();
         private HashMap<String, String> credentials = new HashMap<>();
 
-        private HashMap<String, String> cookies = new HashMap<>();
-        private HashMap<String, String> credentials = new HashMap<>();
-
         private Activity activity;
 
         Login(Activity activity) {
