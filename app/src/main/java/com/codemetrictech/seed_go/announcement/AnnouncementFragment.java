@@ -1,5 +1,7 @@
 package com.codemetrictech.seed_go.announcement;
 
+import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -42,6 +44,7 @@ public class AnnouncementFragment extends Fragment {
     private TextView body_text;
     private ListView attachment_list;
 
+    private Activity activity;
     private String url;
     private String author;
     private String datetime;
@@ -53,6 +56,14 @@ public class AnnouncementFragment extends Fragment {
 
     static Fragment newInstance() { return new AnnouncementFragment();
     }
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity)
+            activity = (Activity) context;
+    }
+
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -116,7 +127,7 @@ public class AnnouncementFragment extends Fragment {
                         body = mElementPostBody.text();
                     else {
                         body = mElementPostBody.select("p").first().text();
-                        getActivity().runOnUiThread(() -> populateTable(mElementTable));
+                        activity.runOnUiThread(() -> populateTable(mElementTable));
                     }
 
                     // Checking for attachments
@@ -135,7 +146,7 @@ public class AnnouncementFragment extends Fragment {
         private void populateTable(Elements table_elements) {
             boolean hasRowSpan = false;
 
-            TableLayout table = new TableLayout(getActivity());
+            TableLayout table = new TableLayout(activity);
             table.setLayoutParams(new TableLayout.LayoutParams());
 
             TableRow.LayoutParams tableRowParams = new TableRow.LayoutParams();
@@ -144,7 +155,7 @@ public class AnnouncementFragment extends Fragment {
 
             Elements table_rows = table_elements.select("tr");
             for (Element table_row : table_rows) {
-                TableRow row = new TableRow(getActivity());
+                TableRow row = new TableRow(activity);
                 row.setBackgroundColor(Color.LTGRAY);
 
                 Elements table_cols = table_row.select("td");
@@ -187,7 +198,7 @@ public class AnnouncementFragment extends Fragment {
         }
 
         private TextView createCell (String text, TableRow.LayoutParams params) {
-            TextView cell = new TextView(getActivity());
+            TextView cell = new TextView(activity);
             cell.setText(text);
             cell.setTextIsSelectable(true);
             cell.setBackgroundColor(Color.parseColor("#FAFAFA"));
@@ -253,7 +264,7 @@ public class AnnouncementFragment extends Fragment {
 
             body_text.setText(body);
 
-            attachment_list.setAdapter(new CustomListViewAdapter(getActivity(), files));
+            attachment_list.setAdapter(new CustomListViewAdapter(activity, files));
 
         }
 
