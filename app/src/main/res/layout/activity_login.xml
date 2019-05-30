@@ -1,81 +1,112 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/login_linear_layout"
+
+<androidx.coordinatorlayout.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/form_login"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center_horizontal"
-    android:background="@color/colorPrimaryDark">
+    android:layout_width="match_parent" >
 
-    <ImageView
-        android:id="@+id/loginLogo"
-        android:layout_width="179dp"
-        android:layout_height="170dp"
-        android:layout_marginTop="59dp"
-        android:src="@drawable/logo" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorPrimaryDark">
 
+        <ImageView
+            android:id="@+id/logo"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="35dp"
+            android:src="@drawable/logo"
+            app:layout_constraintBottom_toTopOf="@+id/username"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
+        <EditText
+            android:id="@+id/username"
+            android:layout_width="250dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="28dp"
+            android:background="@drawable/rounded_edittext_login"
+            android:drawableStart="@drawable/vector_person"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:focusable="true"
+            android:hint="Username"
+            android:inputType="text"
+            android:paddingStart="10dp"
+            android:paddingEnd="5dp"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/password"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/logo" />
 
-    <EditText
-        android:id="@+id/username"
-        android:hint="Username"
-        android:layout_width="220dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="35dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="5dp"
-        android:focusable="true"
-        android:background="@drawable/rounded_edittext_login"
-        android:drawableStart="@drawable/ic_person_black_24dp"
-        android:drawablePadding="10dp"
-        android:ems="10"
-        android:inputType="text"
-        android:textSize="16sp" />
+        <EditText
+            android:id="@+id/password"
+            android:layout_width="250dp"
+            android:layout_height="36dp"
+            android:layout_marginBottom="28dp"
+            android:background="@drawable/rounded_edittext_login"
+            android:drawableStart="@drawable/vector_lock"
+            android:drawablePadding="10dp"
+            android:ems="10"
+            android:focusable="true"
+            android:hint="Password"
+            android:inputType="textPassword"
+            android:paddingStart="10dp"
+            android:paddingEnd="5dp"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toTopOf="@+id/cb_remember_me"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username" />
 
-    <EditText
-        android:id="@+id/password"
-        android:hint="Password"
-        android:layout_width="220dp"
-        android:layout_height="36dp"
-        android:layout_marginTop="28dp"
-        android:paddingStart="10dp"
-        android:paddingEnd="5dp"
-        android:focusable="true"
-        android:background="@drawable/rounded_edittext_login"
-        android:drawableStart="@drawable/ic_lock_black_24dp"
-        android:drawablePadding="10dp"
-        android:ems="10"
-        android:inputType="textPassword"
-        android:textSize="16sp" />
+        <com.google.android.material.checkbox.MaterialCheckBox
+            android:id="@+id/cb_remember_me"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:checked="false"
+            android:buttonTint="@color/colorPrimary"
+            android:text="Remember me"
+            android:textColor="@color/colorPrimary"
+            app:layout_constraintBottom_toTopOf="@+id/progress_circular"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/password" />
 
-    <com.google.android.material.checkbox.MaterialCheckBox
-        android:id="@+id/remember_me_checkbox"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:paddingTop="10dp"
-        android:paddingVertical="20dp"
-        android:text="Remember me"
-        android:checked="false"/>
+        <androidx.core.widget.ContentLoadingProgressBar
+            android:id="@+id/progress_circular"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="28dp"
+            android:visibility="gone"
+            app:layout_constraintBottom_toTopOf="@+id/btn_login"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cb_remember_me" />
 
-    <androidx.core.widget.ContentLoadingProgressBar
-        android:id="@+id/progress_bar"
-        style="@style/Widget.AppCompat.ProgressBar"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:layout_marginBottom="-10dp"
-        android:visibility="gone"/>
-    <Button
-        android:id="@+id/btn_login"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"
-        android:background="@drawable/rounded_button"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        android:text="Login"
-        android:clickable="true"
-        android:focusable="true"/>
+        <Button
+            android:id="@+id/btn_login"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="55dp"
+            android:layout_marginEnd="55dp"
+            android:layout_marginBottom="128dp"
+            android:background="@drawable/rounded_button"
+            android:text="Login"
+            android:textColor="@color/colorPrimary"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/progress_circular" />
 
-</LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

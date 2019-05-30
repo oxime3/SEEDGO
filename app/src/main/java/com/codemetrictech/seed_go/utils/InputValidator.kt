@@ -1,4 +1,4 @@
-package com.codemetrictech.seed_go.utility
+package com.codemetrictech.seed_go.utils
 
 class InputValidator {
     companion object {

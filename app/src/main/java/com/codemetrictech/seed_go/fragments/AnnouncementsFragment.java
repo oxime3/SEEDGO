@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,6 +39,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -50,19 +52,25 @@ import androidx.appcompat.widget.PopupMenu;
 
 import com.codemetrictech.seed_go.AnnouncementAdapter;
 import com.codemetrictech.seed_go.R;
+import com.codemetrictech.seed_go.Session;
 
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
+import static com.codemetrictech.seed_go.LoginActivity.session;
+
+
 public class AnnouncementsFragment extends Fragment {
 
-    RecyclerView recyclerView;
+    RecyclerView unread;
+    RecyclerView read;
     AnnouncementAdapter adapter;
     Context mContext;
     DatabaseHelper myDb;
 
-
+    ArrayList<Announcement> allAnnouncements = new ArrayList<>();
     static List<Announcement> unreadannouncementList = new ArrayList<>();
     static List<Announcement> readannouncementList = new ArrayList<>();
     static ArrayList<Announcement> readannouncementID = new ArrayList<>();
@@ -78,12 +86,12 @@ public class AnnouncementsFragment extends Fragment {
     Integer seen = 0;
     public static Integer id = 0;
 
-
-    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
-    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
-    String username = "UWI180913";
-    String password = "C1555480@G!C";
+//
+//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
+//    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
+//    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
+//    String username = "UWI180913";
+//    String password = "C1555480@G!C";
 
     HashMap<String, String> cookies = new HashMap<>();
     HashMap<String, String> formData = new HashMap<>();
@@ -126,54 +134,53 @@ public class AnnouncementsFragment extends Fragment {
         }
 
         myDb = new DatabaseHelper(getContext());
-        new JsoupAsyncTask().execute();
-
     }
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
                              final Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_announcements_unreadvsread, container, false);
+        return inflater.inflate(R.layout.fragment_announcements_unreadvsread, container, false);
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        //initDatabase();
+        readannouncementList.clear();
+        unreadannouncementList.clear();
+        initWidgets();
+        new JsoupAsyncTask().execute();
+    }
 
+    private void initDatabase() {
         Cursor result = myDb.getAllData();
-        System.out.println("DB COUNT:" + result.getCount());
+        System.out.println("DB COUNT ON START:" + result.getCount());
         if (result.getCount() ==  0){
             System.out.println("DB EMPTY.");
         }
         else{
             StringBuffer buffer = new StringBuffer();
             readannouncementID.clear();
+            readannouncementList.clear();
+            unreadannouncementList.clear();
             while (result.moveToNext()){
                 anId = result.getString(0);
                 System.out.println("DB HAS CONTENT.");
                 System.out.println("ANNOUNCEMENT ID: " + anId);
-                anSeen = result.getInt(1);
-                System.out.println("ANNOUNCEMENT STATUS: " + anSeen);
-                readannouncementID.add(new Announcement(anId,anSeen));
+                //readannouncementID.add(new Announcement(anId));
             }
         }
+    }
 
-//        unreadannouncementList.add(new Announcement(
-//                "Do Not Eat", "10/3/2000", 0, "."));
-//
-//        readannouncementList.add(new Announcement(
-//                "Eat", "1/5/2000",  1, "."));
-
-
-        recyclerView = (RecyclerView) view.findViewById(R.id.unreadrv);
-        AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), unreadannouncementList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter);
+    private void initWidgets() {
+        unread = (RecyclerView) getView().findViewById(R.id.unreadrv);
+        unread.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //readannouncementList.add(new Announcement(mBlogTitle, mAuthorName, mBlogBody, seen, mBlogId));
-        recyclerView = (RecyclerView) view.findViewById(R.id.readrv);
-        AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
-        recyclerView.setAdapter(adapter2);
+        read = (RecyclerView) getView().findViewById(R.id.readrv);
+        read.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        return view;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
@@ -229,25 +236,25 @@ public class AnnouncementsFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-            try {
-                System.out.println("BACKGROUND OP STARTED");
-                Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-
-                cookies.putAll(loginForm.cookies());
-                formData.put("username", username);
-                formData.put("password", password);
-
-                Connection.Response homepage = Jsoup.connect(loginActionUrl)
-                        .cookies(cookies)
-                        .data(formData)
-                        .method(Connection.Method.POST)
-                        .userAgent(USER_AGENT)
-                        .execute();
-
-                System.out.println("LOGGING IN");
-
-                cookies.clear();
-                cookies.putAll(homepage.cookies());
+//            try {
+//                System.out.println("BACKGROUND OP STARTED");
+//                Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
+//
+//                cookies.putAll(loginForm.cookies());
+//                formData.put("username", username);
+//                formData.put("password", password);
+//
+//                Connection.Response homepage = Jsoup.connect(loginActionUrl)
+//                        .cookies(cookies)
+//                        .data(formData)
+//                        .method(Connection.Method.POST)
+//                        .userAgent(USER_AGENT)
+//                        .execute();
+//
+//                System.out.println("LOGGING IN");
+//
+//                cookies.clear();
+//                cookies.putAll(homepage.cookies());
 
 
 //              Get from db
@@ -272,8 +279,11 @@ public class AnnouncementsFragment extends Fragment {
 //                    Connection.Response mBlog = Jsoup.connect(url).cookies(cookies).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
 //                    System.out.println("MBLOG RESPONSE" + mBlog.parse().html());
 //                    Document mBlogDocument = mBlog.parse();
-                    Document doc = Jsoup.connect(url).cookies(cookies).get();
-                    System.out.println("DOC VALUE" + doc);
+                    Document doc = Jsoup
+                            .connect(url)
+                            //.cookies(cookies)
+                            .cookies(session.getCookies())
+                            .get();
 
 
                     // Identify Table Class "worldpopulation"
@@ -313,41 +323,85 @@ public class AnnouncementsFragment extends Fragment {
                                 mBlogId = link;
                                 mBlogId = link.substring(link.length() - 4);
                                 System.out.println("SHORTENED BLOG ID VALUE" + mBlogId);
+                                System.out.println(link);
 
                                 arraylist.add(map);
-
-                                for (int i = 0; i < readannouncementID.size(); i++) {
-                                    if (readannouncementID.get(i).getId().contains(mBlogId)) {
-                                        readannouncementList.add(new Announcement(mBlogTitle, mBlogUploadDate, seen, mBlogId, link));
-                                    }
-                                }
-                                if (!readannouncementID.contains(mBlogId)) {
-                                    unreadannouncementList.add(new Announcement(mBlogTitle, mBlogUploadDate, 1, mBlogId, link));
-                                    boolean isInserted = myDb.insertData(mBlogId, seen);
-                                    if (isInserted != true) {
-                                        System.out.println("UNREAD ANNOUNCEMENT NOT ADDED TO DB");
-                                    }
-                                }
-
-                                //}
+                                allAnnouncements.add(new Announcement(mBlogTitle, mBlogUploadDate, mBlogId, link));
 
                             }
                         }
                     }
+                    System.out.println(allAnnouncements.size());
+                    allAnnouncements.forEach(System.out::println);
+                    sortAnnouncements();
+
                 } catch (IOException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                int i = 0;
+                System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
+                System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
+                if(readannouncementList.size() > 0){
+                    System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
+                }
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
             return null;
+        }
+
+        private void sortAnnouncements() {
+            Cursor result = myDb.getAllData();
+            System.out.println("DB COUNT:" + result.getCount());
+            if (result.getCount() ==  0){
+                System.out.println("DB EMPTY.");
+                unreadannouncementList.addAll(allAnnouncements);
+                //System.out.println("UNREAD ANNOUNCEMENT: " + mBlogId);
+                boolean isInserted = myDb.insertData(mBlogId);
+                if (isInserted != true) {
+                    System.out.println("UNREAD ANNOUNCEMENT NOT ADDED TO DB");
+                }
+            }
+            else {
+                for (Announcement announcement: allAnnouncements) {
+                    String id = announcement.getId();
+
+                    if (recordExists(result, id))
+                        readannouncementList.add(announcement);
+                    else
+                        unreadannouncementList.add(announcement);
+                }
+
+            }
+
+        }
+
+        public boolean recordExists(Cursor cursor, String id) {
+            boolean status = true;
+            while (cursor.moveToNext()){
+                String seen_id = cursor.getString(cursor.getColumnIndex(col_1));
+
+                if (id.equals(seen_id))
+                    status = true;
+                return status;
+
+            }
+            status = false;
+
+            return status;
         }
 
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
+
+            AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), unreadannouncementList);
+            unread.setAdapter(adapter);
+
+            AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
+            read.setAdapter(adapter2);
         }
 
     }

@@ -1,10 +1,10 @@
-package com.codemetrictech.seed_go.utility
+package com.codemetrictech.seed_go.utils
 
 import android.content.Context
 import android.preference.PreferenceManager
 
 
-class preferences() {
+class Preferences() {
 
     companion object PrefController{
 
