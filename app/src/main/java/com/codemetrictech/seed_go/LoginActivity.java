@@ -38,7 +38,6 @@ public class LoginActivity extends Activity {
     private boolean isSigningIn;
     public static Session session;
     private PrefController prefController = Preferences.PrefController;
-    private final String TAG = "--- LOGIN";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
