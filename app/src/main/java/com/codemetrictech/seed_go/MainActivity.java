@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     private TabLayout mTabLayout;
     private List<Fragment> FragmentList;
     private int TotalFragments;
-    FragmentManager manager;
+    FragmentManager manager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -137,6 +137,22 @@ public class MainActivity extends AppCompatActivity implements
                 fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commitAllowingStateLoss();
                 break;
+                
+            case R.id.action_logout:
+                new AlertDialog.Builder(MainActivity.this)
+                        .setTitle("Logout Confirmation")
+                        .setMessage("Are you sure you want to logout?")
+                        .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                            Intent intent = new Intent(this, LoginActivity.class);
+                            startActivityForResult(intent, 200);
+                            finish();
+                        })
+                        .setNegativeButton(android.R.string.no, (dialog, which) -> {
+                            // do nothing
+                        })
+                        .setIcon(android.R.drawable.ic_dialog_alert)
+                        .show();
+                break;        
         }
 
 
