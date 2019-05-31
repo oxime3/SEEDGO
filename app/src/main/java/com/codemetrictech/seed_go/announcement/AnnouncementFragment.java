@@ -80,8 +80,12 @@ public class AnnouncementFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
+            System.out.println("IN ANNOUNCEMENT FRAGMENT");
             super.onPreExecute();
             url = getArguments().getString("url");
+
+            System.out.println("URL RECEIVED FROM BUNDLE: " + url);
+
             announcement_title = getView().findViewById(R.id.announcement_title);
             announcement_author_datetime = getView().findViewById(R.id.announcement_author_datetime);
             announcement_body = getView().findViewById(R.id.announcement_body);
@@ -135,6 +139,7 @@ public class AnnouncementFragment extends Fragment {
                     if (!mElementAttachments.isEmpty())
                         retrieveAttachments(mElementAttachments.first());
                 }
+                System.out.println("DOCUMENT BODY " + announcement.text());
 
             }
             catch (IOException e) {
@@ -272,4 +277,3 @@ public class AnnouncementFragment extends Fragment {
 
 
 }
-

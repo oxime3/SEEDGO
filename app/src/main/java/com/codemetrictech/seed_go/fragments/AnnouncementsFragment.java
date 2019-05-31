@@ -372,11 +372,8 @@ public class AnnouncementsFragment extends Fragment {
                     else
                         unreadannouncementList.add(announcement);
                 }
-
             }
-
         }
-
 
         public boolean recordExists(Cursor cursor, String id) {
             boolean status = true;
@@ -386,7 +383,6 @@ public class AnnouncementsFragment extends Fragment {
                 if (id.equals(seen_id))
                     status = true;
                 return status;
-
             }
             status = false;
 
@@ -403,6 +399,12 @@ public class AnnouncementsFragment extends Fragment {
             AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
             read.setAdapter(adapter2);
 
+
+//            adapter.notifyDataSetChanged();
+//            adapter2.notifyDataSetChanged();
+//
+//            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
+//            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
 
         }
 

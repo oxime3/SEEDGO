@@ -2,6 +2,7 @@ package com.codemetrictech.seed_go;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +15,7 @@ import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 import com.codemetrictech.seed_go.fragments.Announcement;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -90,18 +92,19 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                     }else
                         seen = false;
                 }
-                if (!seen) {
+                if (seen = false) {
                     boolean isInserted = dbhelper.insertData(announcement.getId());
                     if (isInserted != true) {
                         System.out.println("ADAPTER: READ ANNOUNCEMENT NOT ADDED TO DB" + announcement.getId());
                     }
                 }
 
-//                Fragment fragment = new AnnouncementFragment();
-//                Bundle bundle = new Bundle();
-//                bundle.putString("url", announcement.getLink());
-//                fragment.setArguments(bundle);
-//                host_activity.switchFragment(fragment);
+                Fragment fragment = new AnnouncementFragment();
+                Bundle bundle = new Bundle();
+                System.out.println("URL PASSED: " + announcement.getLink());
+                bundle.putString("url", announcement.getLink());
+                fragment.setArguments(bundle);
+                host_activity.switchFragment(fragment);
             }
         });
 
@@ -136,6 +139,13 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
     @Override
     public int getItemViewType(int position) {
         return position;
+    }
+
+
+    public void refreshUnread(List<Announcement> announcementList) {
+        this.announcementList.clear();
+        this.announcementList.addAll(announcementList);
+        notifyDataSetChanged();
     }
 
 

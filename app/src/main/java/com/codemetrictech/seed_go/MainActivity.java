@@ -37,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements
     private TabLayout mTabLayout;
     private List<Fragment> FragmentList;
     private int TotalFragments;
-    FragmentManager manager;
+    FragmentManager manager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
