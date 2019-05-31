@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -13,42 +12,32 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
-import android.widget.Toast;
-
-
-import androidx.annotation.NonNull;
 
 import com.codemetrictech.seed_go.utils.*;
 import com.codemetrictech.seed_go.utils.Preferences.PrefController;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.IOException;
 import java.util.HashMap;
-
-
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
-
 public class LoginActivity extends Activity {
-    public static Session session;
     private EditText username;
     private EditText password;
     private CheckBox checkBox;
-    private Button btn_login;
     private ProgressBar progressBar;
-    private Boolean isValidPassword = false;
-    private boolean isValidUsername = false;
-    private boolean isSigningIn = false;
-    private boolean isNetworkDown = false;
-    private PrefController prefController = Preferences.PrefController;
+    private Button btn_login;
 
-    private final String TAG = "--- LOGIN";
+    private boolean isValidUsername = true;
+    private Boolean isValidPassword = true;
+    private boolean isSigningIn;
+    public static Session session;
+    private PrefController prefController = Preferences.PrefController;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +46,6 @@ public class LoginActivity extends Activity {
         //getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE|WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
         initWidgets();
         checkUserPreferences();
-
     }
 
     private void initWidgets() {
@@ -68,10 +56,12 @@ public class LoginActivity extends Activity {
                 keyboard.showSoftInput(username, 0);
             else
                 keyboard.hideSoftInputFromWindow(username.getWindowToken(), 0);
+
             String inputName = username.getText().toString();
             if (!inputName.isEmpty()) {
                 isValidUsername = InputValidator.Companion.validateUsername(inputName);
-                if(!isValidUsername){
+
+                if (!isValidUsername) {
                     username.setError("Invalid username.");
                 }
             }
@@ -84,10 +74,12 @@ public class LoginActivity extends Activity {
                 keyboard.showSoftInput(password, 0);
             else
                 keyboard.hideSoftInputFromWindow(password.getWindowToken(), 0);
+
             String pass = password.getText().toString();
-            if (!pass.isEmpty()){
+
+            if (!pass.isEmpty()) {
                 isValidPassword = InputValidator.Companion.validatePassword(pass);
-                if (!isValidPassword){
+                if (!isValidPassword) {
                     password.setError("Invalid Password.");
                 }
             }
@@ -96,11 +88,10 @@ public class LoginActivity extends Activity {
 
         checkBox = findViewById(R.id.cb_remember_me);
         checkBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            if (isChecked){
+            if (isChecked)
                 prefController.setRememberMe(getApplicationContext(), true );
-            } else {
+            else
                 prefController.setRememberMe(getApplicationContext(),false );
-            }
         });
 
         progressBar = findViewById(R.id.progress_circular);
@@ -108,38 +99,41 @@ public class LoginActivity extends Activity {
         btn_login = findViewById(R.id.btn_login);
         btn_login.setOnClickListener(view -> {
             btn_login.setClickable(false);
-            InputMethodManager keyboard = (InputMethodManager) LoginActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
             password.clearFocus();
             btn_login.requestFocus();
+
+            InputMethodManager keyboard = (InputMethodManager) LoginActivity.this.getSystemService(Context.INPUT_METHOD_SERVICE);
             keyboard.hideSoftInputFromWindow(btn_login.getWindowToken(), 0);
 
-            if (isValidPassword && isValidUsername){
+            if (isValidUsername && isValidPassword) {
                 isSigningIn = true;
-                isNetworkDown = false;
                 updateUI();
-                new Login(LoginActivity.this).execute();
+                new Login().execute();
             } else {
-                Snackbar.make(view, "Please check your form.", Snackbar.LENGTH_SHORT).show();
-                if(!isValidUsername){
+                Snackbar.make(view, "Please check your form.", Snackbar.LENGTH_LONG)
+                        .setDuration(3000)
+                        .show();
+
+                if (!isValidUsername)
                     username.requestFocus();
-                } else{
+                else
                     password.requestFocus();
-                }
+
                 updateUI();
             }
         });
     }
 
-    private void checkUserPreferences(){
-        if(prefController.getRememberMe(getApplicationContext())){
+    private void checkUserPreferences() {
+        if (prefController.getRememberMe(getApplicationContext())) {
             String pref_username = prefController.getUserName(getApplicationContext());
             username.setText(pref_username);
             checkBox.setChecked(true);
         }
     }
 
-    public void setUserPreferences(){
-        if(checkBox.isChecked()){
+    public void setUserPreferences() {
+        if(checkBox.isChecked()) {
             prefController.setUserName(getApplicationContext(), username.getText().toString());
             username.clearFocus();
             password.requestFocus();
@@ -148,18 +142,16 @@ public class LoginActivity extends Activity {
         }
     }
 
-    public void updateUI(){
+    public void updateUI() {
         if (isSigningIn) {
             btn_login.setClickable(false);
-            btn_login.setText("Please wait...");
+            btn_login.setText("PLEASE WAIT...");
             progressBar.setVisibility(View.VISIBLE);
         } else {
             btn_login.setClickable(true);
             btn_login.setText("LOGIN");
-            progressBar.setVisibility(View.INVISIBLE);
+            progressBar.setVisibility(View.GONE);
         }
-
-        Log.d(TAG, "updateUI");
 
     }
 
@@ -169,12 +161,6 @@ public class LoginActivity extends Activity {
 
         private HashMap<String, String> cookies = new HashMap<>();
         private HashMap<String, String> credentials = new HashMap<>();
-
-        private Activity activity;
-
-        Login(Activity activity) {
-            this.activity = activity;
-        }
 
         @Override
         protected void onPreExecute() {
@@ -194,9 +180,8 @@ public class LoginActivity extends Activity {
 
                 cookies.putAll(loginForm.cookies());
 
-                runOnUiThread(() -> credentials.put("username", username.getText().toString()));
-                runOnUiThread(() -> credentials.put("password", password.getText().toString()));
-
+                credentials.put("username", username.getText().toString());
+                credentials.put("password", password.getText().toString());
 
                 Connection.Response homepage = Jsoup
                         .connect(url_login)
@@ -212,24 +197,24 @@ public class LoginActivity extends Activity {
                 Document document = homepage.parse();
 
                 if (!document.title().contains("Login to the site")) {
-                    runOnUiThread(()-> Snackbar.make(findViewById(R.id.form_login),
-                            "Logged in Successfully", Snackbar.LENGTH_SHORT).show());
+                    Snackbar.make(findViewById(R.id.form_login), "Logged in Successfully", Snackbar.LENGTH_LONG)
+                            .setDuration(3000)
+                            .show();
+                  
                     isSigningIn = false;
                     session.setCookies(cookies);
                 }
                 else {
-                    runOnUiThread(()-> Snackbar.make(findViewById(R.id.form_login),
-                            getString(R.string.erroneous_password_error_msg), Snackbar.LENGTH_SHORT)
-                            .show());
-                    Log.d(TAG, "SEED AUTH FAIL");
+                    Snackbar.make(findViewById(R.id.form_login), getString(R.string.erroneous_password_error_msg), Snackbar.LENGTH_LONG)
+                            .setDuration(3000)
+                            .show();
                 }
             }
             catch (IOException ioe) {
                 isSigningIn = false;
-                isNetworkDown = true;
-
-                runOnUiThread(()-> Snackbar.make(findViewById(R.id.form_login), "Connection Error.", Snackbar.LENGTH_SHORT).show());
-                Log.d(TAG, ioe.getMessage());
+                Snackbar.make(findViewById(R.id.form_login), "Connection Error.", Snackbar.LENGTH_LONG)
+                        .setDuration(3000)
+                        .show();
             }
 
             return null;
@@ -241,7 +226,7 @@ public class LoginActivity extends Activity {
             updateUI();
             setUserPreferences();
 
-            if (isValidUsername && isValidPassword) {
+            if (!session.getCookies().isEmpty()) {
                 finish();
                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
             }

@@ -61,7 +61,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:title="Attachments"
-        app:icon="@drawable/ic_attachment_black_24dp"
+        app:icon="@drawable/vector_attachment"
         app:inner_view="@layout/attachments"
         app:expandOnClick="true"
         app:animationDuration="300"
