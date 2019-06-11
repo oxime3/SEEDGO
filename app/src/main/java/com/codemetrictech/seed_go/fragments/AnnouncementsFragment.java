@@ -283,8 +283,8 @@ public class AnnouncementsFragment extends Fragment {
                     Document doc = Jsoup
                             .connect(url)
 
-                            .cookies(cookies)
-                            //.cookies(session.getCookies())
+                            //.cookies(cookies)
+                            .cookies(session.getCookies())
 
                             .get();
 
