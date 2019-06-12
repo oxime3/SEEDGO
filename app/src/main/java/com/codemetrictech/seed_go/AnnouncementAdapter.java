@@ -82,7 +82,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                 System.out.println("ADAPTER: READ ANNOUNCEMENT ID: " + announcement.getId());
                 Cursor result = dbhelper.getAllData();
                 System.out.println("DB COUNT IN ADAPTER:" + result.getCount());
-                boolean seen = true;
+                 boolean seen = false;
                 while (result.moveToNext()){
                     String seen_id = result.getString(result.getColumnIndex(col_1));
                     System.out.println("LOOP THROUGH DB VALUE: " + seen_id);
@@ -92,13 +92,13 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                     }else
                         seen = false;
                 }
-                if (seen = false) {
+                if (seen == false) {
                     boolean isInserted = dbhelper.insertData(announcement.getId());
                     if (isInserted != true) {
                         System.out.println("ADAPTER: READ ANNOUNCEMENT NOT ADDED TO DB" + announcement.getId());
                     }
+                    System.out.println("ADAPTER: READ ANNOUNCEMENT ADDED TO DB" + announcement.getId());
                 }
-
                 Fragment fragment = new AnnouncementFragment();
                 Bundle bundle = new Bundle();
                 System.out.println("URL PASSED: " + announcement.getLink());
