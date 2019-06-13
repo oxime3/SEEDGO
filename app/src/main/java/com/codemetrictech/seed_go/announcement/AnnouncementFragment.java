@@ -18,6 +18,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.alespero.expandablecardview.ExpandableCardView;
 import com.codemetrictech.seed_go.R;
 import com.rachum.amir.util.range.Range;
 
@@ -42,6 +43,7 @@ public class AnnouncementFragment extends Fragment {
     private TextView announcement_author_datetime;
     private LinearLayout announcement_body;
     private TextView body_text;
+    private ExpandableCardView expandableCardView;
     private ListView attachment_list;
 
     private String url;
@@ -86,7 +88,6 @@ public class AnnouncementFragment extends Fragment {
             announcement_author_datetime = getView().findViewById(R.id.announcement_author_datetime);
             announcement_body = getView().findViewById(R.id.announcement_body);
             body_text = getView().findViewById(R.id.body_text);
-            attachment_list = getView().findViewById(R.id.attachment_list);
         }
 
 
@@ -132,8 +133,12 @@ public class AnnouncementFragment extends Fragment {
 
                     // Checking for attachments
                     Elements mElementAttachments = announcement.select("div[class=attachments]");
-                    if (!mElementAttachments.isEmpty())
+                    if (!mElementAttachments.isEmpty()) {
+                        expandableCardView = getView().findViewById(R.id.announcement_attachments);
+                        expandableCardView.setVisibility(View.VISIBLE);
+                        attachment_list = getView().findViewById(R.id.attachment_list);
                         retrieveAttachments(mElementAttachments.first());
+                    }
                 }
 
             }
@@ -263,7 +268,8 @@ public class AnnouncementFragment extends Fragment {
 
             body_text.setText(body);
 
-            attachment_list.setAdapter(new CustomListViewAdapter(activity, files));
+            if (!files.isEmpty())
+                attachment_list.setAdapter(new CustomListViewAdapter(activity, files));
         }
     }
 }
