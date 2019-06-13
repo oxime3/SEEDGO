@@ -60,6 +60,7 @@
         android:id="@+id/announcement_attachments"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:title="Attachments"
         app:icon="@drawable/vector_attachment"
         app:inner_view="@layout/attachments"
