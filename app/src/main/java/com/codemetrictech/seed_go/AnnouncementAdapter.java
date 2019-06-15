@@ -2,56 +2,37 @@ package com.codemetrictech.seed_go;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 import com.codemetrictech.seed_go.fragments.Announcement;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 
 import java.util.List;
 
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
-
-//import com.joestelmach.natty.*;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
 
 public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapter.AnnouncementViewHolder>{
 
     private Context mContext;
-    private Announcement announcement;
     private List<Announcement> announcementList;
-    MainActivity host_activity;
-    DatabaseHelper dbhelper;
-    AnnouncementsFragment host_fragment;
-
-    String url = "http://seed.gist-edu.cn/mod/forum/view.php?f=12&showall=1";
+    private DatabaseHelper dbhelper;
+    private AnnouncementsFragment fragment_host;
 
     public static Integer id = 0;
     String status = "";
 
-//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-//    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
-//    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
-//    String username = "UWI180913";
-//    String password = "C1555480@G!C";
-
-//    HashMap<String, String> cookies = new HashMap<>();
-//    HashMap<String, String> formData = new HashMap<>();
-
     public AnnouncementAdapter(Context mContext, AnnouncementsFragment fragment, List<Announcement> announcementList) {
         this.mContext = mContext;
-        this.host_fragment = fragment;
+        this.fragment_host = fragment;
         this.announcementList = announcementList;
 
     }
-
 
 
     @Override
@@ -94,21 +75,8 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                         System.out.println("ADAPTER: READ ANNOUNCEMENT NOT ADDED TO DB" + announcement.getId());
                     }
                 }
-/*
-                Fragment fragment = new AnnouncementFragment();
-                Bundle bundle = new Bundle();
-                System.out.println("URL PASSED: " + announcement.getLink());
-                bundle.putString("url", announcement.getLink());
-                fragment.setArguments(bundle);
-                host_activity.switchFragment(fragment);
-*/
 
-
-                Bundle bundle = new Bundle();
-                bundle.putString("url", announcement.getLink());
-                Fragment fragment = AnnouncementFragment.newInstance();
-                fragment.setArguments(bundle);
-                host_fragment.viewAnnouncement(fragment, "Announcement Fragment");
+                fragment_host.viewAnnouncement(announcement.getLink());
             }
         });
 
