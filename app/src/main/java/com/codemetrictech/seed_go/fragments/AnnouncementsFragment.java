@@ -110,7 +110,7 @@ public class AnnouncementsFragment extends Fragment {
         //initDatabase();
         readannouncementList.clear();
         unreadannouncementList.clear();
-        initWidgets();
+        initWidgets(view);
         new JsoupAsyncTask().execute();
     }
 
@@ -134,12 +134,12 @@ public class AnnouncementsFragment extends Fragment {
         }
     }
 
-    private void initWidgets() {
-        unread = (RecyclerView) getView().findViewById(R.id.unreadrv);
+    private void initWidgets(View view) {
+        unread = (RecyclerView) view.findViewById(R.id.unreadrv);
         unread.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //readannouncementList.add(new Announcement(mBlogTitle, mAuthorName, mBlogBody, seen, mBlogId));
-        read = (RecyclerView) getView().findViewById(R.id.readrv);
+        read = (RecyclerView) view.findViewById(R.id.readrv);
         read.setLayoutManager(new LinearLayoutManager(getContext()));
 
     }
@@ -192,7 +192,6 @@ public class AnnouncementsFragment extends Fragment {
                 .replace(R.id.unreadfirst, fragment, tag)
                 .addToBackStack(tag)
                 .commit();
-
     }
 
     /**
