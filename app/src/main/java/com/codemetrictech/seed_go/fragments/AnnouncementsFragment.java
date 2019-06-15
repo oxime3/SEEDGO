@@ -1,80 +1,52 @@
 package com.codemetrictech.seed_go.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.alespero.expandablecardview.ExpandableCardView;
 import com.codemetrictech.seed_go.DatabaseHelper;
-//import com.joestelmach.natty.*;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.Nullable;
 
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.appcompat.widget.PopupMenu;
-
 import com.codemetrictech.seed_go.AnnouncementAdapter;
 import com.codemetrictech.seed_go.MainActivity;
 import com.codemetrictech.seed_go.R;
-import com.codemetrictech.seed_go.Session;
+import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
-
 import static com.codemetrictech.seed_go.LoginActivity.session;
 
 
 public class AnnouncementsFragment extends Fragment {
-    Activity activity;
+    private Activity activity;
 
     RecyclerView unread;
     RecyclerView read;
     AnnouncementAdapter adapter;
-    Context mContext;
     DatabaseHelper myDb;
 
     ArrayList<Announcement> allAnnouncements = new ArrayList<>();
@@ -92,18 +64,6 @@ public class AnnouncementsFragment extends Fragment {
 
     Integer seen = 0;
     public static Integer id = 0;
-
-//
-//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-//    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
-//    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
-//    String username = "UWI180913";
-//    String password = "C1555480@G!C";
-
-    HashMap<String, String> cookies = new HashMap<>();
-    HashMap<String, String> formData = new HashMap<>();
-
-
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -124,12 +84,7 @@ public class AnnouncementsFragment extends Fragment {
 
     // TODO: Rename and change types and number of parameters
     public static AnnouncementsFragment newInstance() {
-        AnnouncementsFragment fragment = new AnnouncementsFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-        return fragment;
+        return new AnnouncementsFragment();
     }
 
     @Override
@@ -221,9 +176,17 @@ public class AnnouncementsFragment extends Fragment {
         mListener = null;
     }
 
-    public void viewAnnouncement(Fragment fragment, String tag) {
+    public void viewAnnouncement(String url) {
         LinearLayout layout = getView().findViewById(R.id.unreadfirst);
         layout.removeAllViews();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+
+        Fragment fragment = AnnouncementFragment.newInstance();
+        fragment.setArguments(bundle);
+
+        String tag = "Announcement Fragment";
 
         ((MainActivity) activity).getSupportFragmentManager().beginTransaction()
                 .replace(R.id.unreadfirst, fragment, tag)
@@ -261,55 +224,15 @@ public class AnnouncementsFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-//            try {
-//                System.out.println("BACKGROUND OP STARTED");
-//                Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-//
-//                cookies.putAll(loginForm.cookies());
-//                formData.put("username", username);
-//                formData.put("password", password);
-//
-//                Connection.Response homepage = Jsoup.connect(loginActionUrl)
-//                        .cookies(cookies)
-//                        .data(formData)
-//                        .method(Connection.Method.POST)
-//                        .userAgent(USER_AGENT)
-//                        .execute();
-//
-//                System.out.println("LOGGING IN");
-//
-//                cookies.clear();
-//                cookies.putAll(homepage.cookies());
-
-
-//              Get from db
-//                Cursor result = myDb.getAllData();
-//                if (result.getCount() ==  0){
-//
-//                }
-//                else{
-//                    StringBuffer buffer = new StringBuffer();
-//                    while (result.moveToNext()){
-//                        anId=result.getString(0);
-//                        anSeen = result.getInt(1);
-//                        readannouncementID.add(new Announcement(anId,anSeen));
-//                    }
-//                }
 
             // Create an array
             ArrayList arraylist = new ArrayList<HashMap<String, String>>();
 
             try {
                 // Connect to the Website URL
-//                    Connection.Response mBlog = Jsoup.connect(url).cookies(cookies).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-//                    System.out.println("MBLOG RESPONSE" + mBlog.parse().html());
-//                    Document mBlogDocument = mBlog.parse();
                 Document doc = Jsoup
                         .connect(url)
-
-                        //.cookies(cookies)
                         .cookies(session.getCookies())
-
                         .get();
 
 
@@ -342,7 +265,7 @@ public class AnnouncementsFragment extends Fragment {
                             // Get the third td
                             String link = tds.select("td[class=topic starter]").select("a").attr("href");
                             System.out.println("BLOG ID HREF" + link);
-                            //gte last 6 values of string for the ID
+                            //get last 6 values of string for the ID
                             mBlogId = link;
                             mBlogId = link.substring(link.length() - 4);
                             System.out.println("SHORTENED BLOG ID VALUE" + mBlogId);
@@ -369,9 +292,6 @@ public class AnnouncementsFragment extends Fragment {
                 System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
             }
 
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
             return null;
         }
 
@@ -422,13 +342,6 @@ public class AnnouncementsFragment extends Fragment {
 
             AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, readannouncementList);
             read.setAdapter(adapter2);
-
-
-//            adapter.notifyDataSetChanged();
-//            adapter2.notifyDataSetChanged();
-//
-//            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
-//            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
 
         }
 
