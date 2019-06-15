@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity implements
         mTabLayout = findViewById(R.id.tab_layout);
         initFragmentTabs();
 
-        // Create the adapter that will return a fragment for each of the three
+        // Create the adapter that will return a fragment_host for each of the three
         // primary sections of the activity.
         mTabPagerAdapter = new TabsPagerAdapter(getSupportFragmentManager());
 
@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity implements
 
         String tab1_title = ((AnnouncementsFragment)FragmentList.get(0)).getFragmentTitle();
         String tab2_title = ((CoursesFragment)FragmentList.get(1)).getTAG();
+
+        getSupportFragmentManager().beginTransaction().addToBackStack("Announcements Fragment").commit();
 
         mTabLayout.addTab(mTabLayout.newTab().setText(tab1_title));
         mTabLayout.addTab(mTabLayout.newTab().setText(tab2_title));
@@ -153,21 +155,30 @@ public class MainActivity extends AppCompatActivity implements
         if (backStackEntryCount == 0) {
             moveTaskToBack(false);
 
-        } else if ((backStackEntryCount == 1) && (getCurrentFragment(backStackEntryCount).equals("Announcement Fragment"))) {
+        } else if (getCurrentFragment(backStackEntryCount).equals("Announcement Fragment")) {
+            clearBackStack();
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.unreadfirst, AnnouncementsFragment.newInstance(), "Announcements Fragment")
-                    .addToBackStack("Announcements Fragment")
                     .commit();
 
+        } else if (getCurrentFragment(backStackEntryCount).equals("Announcements Fragment")) {
+            moveTaskToBack(false);
+        }
+/*
         } else {
             getSupportFragmentManager().popBackStackImmediate();
         }
-
+*/
     }
 
     public String getCurrentFragment(int count) {
         return getSupportFragmentManager().getBackStackEntryAt(count - 1).getName();
+    }
+
+    public void clearBackStack() {
+        String root = getSupportFragmentManager().getBackStackEntryAt(0).getName();
+        getSupportFragmentManager().popBackStackImmediate(root, 0);
     }
 
     public class TabsPagerAdapter extends FragmentPagerAdapter {
@@ -189,12 +200,12 @@ public class MainActivity extends AppCompatActivity implements
 
 
     /**
-     * A placeholder fragment containing a simple view.
+     * A placeholder fragment_host containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
         /**
-         * The fragment argument representing the section number for this
-         * fragment.
+         * The fragment_host argument representing the section number for this
+         * fragment_host.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
 
@@ -202,7 +213,7 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         /**
-         * Returns a new instance of this fragment for the given section
+         * Returns a new instance of this fragment_host for the given section
          * number.
          */
         public static PlaceholderFragment newInstance(int sectionNumber) {
