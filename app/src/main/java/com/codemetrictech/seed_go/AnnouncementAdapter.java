@@ -1,8 +1,6 @@
 package com.codemetrictech.seed_go;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -15,16 +13,12 @@ import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 import com.codemetrictech.seed_go.fragments.Announcement;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 //import com.joestelmach.natty.*;
-
-import java.util.HashMap;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
 
@@ -35,6 +29,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
     private List<Announcement> announcementList;
     MainActivity host_activity;
     DatabaseHelper dbhelper;
+    AnnouncementsFragment host_fragment;
 
     String url = "http://seed.gist-edu.cn/mod/forum/view.php?f=12&showall=1";
 
@@ -50,10 +45,11 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
 //    HashMap<String, String> cookies = new HashMap<>();
 //    HashMap<String, String> formData = new HashMap<>();
 
-    public AnnouncementAdapter(Context mContext, List<Announcement> announcementList) {
+    public AnnouncementAdapter(Context mContext, AnnouncementsFragment fragment, List<Announcement> announcementList) {
         this.mContext = mContext;
+        this.host_fragment = fragment;
         this.announcementList = announcementList;
-        this.host_activity = (MainActivity)mContext;
+
     }
 
 
@@ -70,7 +66,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
 
     @Override
     public void onBindViewHolder(AnnouncementViewHolder holder, int position) {
-        //holder.setIsRecyclable(false);
+        holder.setIsRecyclable(false);
         Announcement announcement = announcementList.get(position);
 
         holder.post_title.setText((announcement.getPost_title()));
@@ -82,7 +78,7 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                 System.out.println("ADAPTER: READ ANNOUNCEMENT ID: " + announcement.getId());
                 Cursor result = dbhelper.getAllData();
                 System.out.println("DB COUNT IN ADAPTER:" + result.getCount());
-                 boolean seen = false;
+                boolean seen = true;
                 while (result.moveToNext()){
                     String seen_id = result.getString(result.getColumnIndex(col_1));
                     System.out.println("LOOP THROUGH DB VALUE: " + seen_id);
@@ -92,19 +88,27 @@ public class AnnouncementAdapter extends RecyclerView.Adapter <AnnouncementAdapt
                     }else
                         seen = false;
                 }
-                if (seen == false) {
+                if (seen = false) {
                     boolean isInserted = dbhelper.insertData(announcement.getId());
                     if (isInserted != true) {
                         System.out.println("ADAPTER: READ ANNOUNCEMENT NOT ADDED TO DB" + announcement.getId());
                     }
-                    System.out.println("ADAPTER: READ ANNOUNCEMENT ADDED TO DB" + announcement.getId());
                 }
+/*
                 Fragment fragment = new AnnouncementFragment();
                 Bundle bundle = new Bundle();
                 System.out.println("URL PASSED: " + announcement.getLink());
                 bundle.putString("url", announcement.getLink());
                 fragment.setArguments(bundle);
                 host_activity.switchFragment(fragment);
+*/
+
+
+                Bundle bundle = new Bundle();
+                bundle.putString("url", announcement.getLink());
+                Fragment fragment = AnnouncementFragment.newInstance();
+                fragment.setArguments(bundle);
+                host_fragment.viewAnnouncement(fragment, "Announcement Fragment");
             }
         });
 
