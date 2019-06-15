@@ -135,7 +135,7 @@ public class AnnouncementFragment extends Fragment {
                     Elements mElementAttachments = announcement.select("div[class=attachments]");
                     if (!mElementAttachments.isEmpty()) {
                         expandableCardView = getView().findViewById(R.id.announcement_attachments);
-                        expandableCardView.setVisibility(View.VISIBLE);
+                        activity.runOnUiThread(() -> expandableCardView.setVisibility(View.VISIBLE));
                         attachment_list = getView().findViewById(R.id.attachment_list);
                         retrieveAttachments(mElementAttachments.first());
                     }
