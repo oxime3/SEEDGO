@@ -1,5 +1,6 @@
 package com.codemetrictech.seed_go;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.SparseArray;
@@ -10,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -18,6 +20,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 import com.codemetrictech.seed_go.fragments.CoursesFragment;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -27,17 +30,16 @@ import com.notbytes.barcode_reader.BarcodeReaderFragment;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.codemetrictech.seed_go.LoginActivity.session;
+
 public class MainActivity extends AppCompatActivity implements
         AnnouncementsFragment.OnFragmentInteractionListener,
-        BarcodeReaderFragment.BarcodeReaderListener
-{
+        BarcodeReaderFragment.BarcodeReaderListener {
 
     private TabsPagerAdapter mTabPagerAdapter;
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
     private List<Fragment> FragmentList;
-    private int TotalFragments;
-    FragmentManager manager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,17 +69,13 @@ public class MainActivity extends AppCompatActivity implements
 
     private void initFragmentTabs(){
         FragmentList = new ArrayList<>();
-        Fragment frag1 = AnnouncementsFragment.newInstance();
-//        Fragment frag2 = CoursesFragment_beta.newInstance();
-        Fragment frag2 = new CoursesFragment();
 
-        FragmentList.add(frag1);
-        FragmentList.add(frag2);
-        TotalFragments = FragmentList.size();
+        FragmentList.add(AnnouncementsFragment.newInstance());
+        FragmentList.add(new CoursesFragment());
 
         String tab1_title = ((AnnouncementsFragment)FragmentList.get(0)).getFragmentTitle();
         String tab2_title = ((CoursesFragment)FragmentList.get(1)).getTAG();
-//        String tab2_title = ((CoursesFragment_beta)FragmentList.get(1)).getFragmentTitle();
+
         mTabLayout.addTab(mTabLayout.newTab().setText(tab1_title));
         mTabLayout.addTab(mTabLayout.newTab().setText(tab2_title));
         mTabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
@@ -102,13 +100,6 @@ public class MainActivity extends AppCompatActivity implements
 
     }
 
-
-    public void switchFragment(Fragment fragment){
-        this.manager.beginTransaction()
-                .replace(R.id.container, fragment, "dunno")
-                .addToBackStack(null)
-                .commit(); }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
@@ -124,24 +115,21 @@ public class MainActivity extends AppCompatActivity implements
         int id = item.getItemId();
 
         switch (id) {
-            case R.id.action_settings :
-                return true;
-
             case R.id.action_scan :
                 BarcodeReaderFragment readerFragment = BarcodeReaderFragment.newInstance(true, false, View.VISIBLE);
                 readerFragment.setListener(this);
-                FragmentManager supportFragmentManager = getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = supportFragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.main_content, readerFragment);
-                fragmentTransaction.addToBackStack(null);
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.main_content, readerFragment, "Barcode Reader Fragment");
+                fragmentTransaction.addToBackStack("Barcode Reader Fragment");
                 fragmentTransaction.commitAllowingStateLoss();
                 break;
-                
+
             case R.id.action_logout:
                 new AlertDialog.Builder(MainActivity.this)
                         .setTitle("Logout Confirmation")
                         .setMessage("Are you sure you want to logout?")
                         .setPositiveButton(android.R.string.yes, (dialog, which) -> {
+                            session.deleteSession();
                             Intent intent = new Intent(this, LoginActivity.class);
                             startActivityForResult(intent, 200);
                             finish();
@@ -151,7 +139,7 @@ public class MainActivity extends AppCompatActivity implements
                         })
                         .setIcon(android.R.drawable.ic_dialog_alert)
                         .show();
-                break;        
+                break;
         }
 
 
@@ -159,39 +147,46 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onBackPressed() {
+        int backStackEntryCount = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (backStackEntryCount == 0) {
+            moveTaskToBack(false);
+
+        } else if ((backStackEntryCount == 1) && (getCurrentFragment(backStackEntryCount).equals("Announcement Fragment"))) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.unreadfirst, AnnouncementsFragment.newInstance(), "Announcements Fragment")
+                    .addToBackStack("Announcements Fragment")
+                    .commit();
+
+        } else {
+            getSupportFragmentManager().popBackStackImmediate();
+        }
 
     }
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
+    public String getCurrentFragment(int count) {
+        return getSupportFragmentManager().getBackStackEntryAt(count - 1).getName();
     }
 
-    @Override
-    public void onScanned(Barcode barcode) {
+    public class TabsPagerAdapter extends FragmentPagerAdapter {
 
+        public TabsPagerAdapter(FragmentManager fm) {
+            super(fm);
+        }
+
+        @Override
+        public Fragment getItem(int position) {
+            return FragmentList.get(position);
+        }
+
+        @Override
+        public int getCount() {
+            return FragmentList.size();
+        }
     }
 
-    @Override
-    public void onScannedMultiple(List<Barcode> barcodes) {
-
-    }
-
-    @Override
-    public void onBitmapScanned(SparseArray<Barcode> sparseArray) {
-
-    }
-
-    @Override
-    public void onScanError(String errorMessage) {
-
-    }
-
-    @Override
-    public void onCameraPermissionDenied() {
-
-    }
 
     /**
      * A placeholder fragment containing a simple view.
@@ -229,28 +224,42 @@ public class MainActivity extends AppCompatActivity implements
     }
 
 
-    public class TabsPagerAdapter extends FragmentPagerAdapter {
+    /**********************************************************************************************
+     * BARCODE READER LISTENER METHODS                                                            *
+     **********************************************************************************************/
+    @Override
+    public void onFragmentInteraction(Uri uri) {
 
-        public TabsPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            switch (position){
-                case 0:
-                    return FragmentList.get(0);
-                case 1:
-                    return FragmentList.get(1);
-
-                    default:
-                        return null;
-            }
-        }
-
-        @Override
-        public int getCount() {
-            return TotalFragments;
-        }
     }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+    @Override
+    public void onScanned(Barcode barcode) {
+
+    }
+
+    @Override
+    public void onScannedMultiple(List<Barcode> barcodes) {
+
+    }
+
+    @Override
+    public void onBitmapScanned(SparseArray<Barcode> sparseArray) {
+
+    }
+
+    @Override
+    public void onScanError(String errorMessage) {
+
+    }
+
+    @Override
+    public void onCameraPermissionDenied() {
+
+    }
+
 }
