@@ -17,5 +17,8 @@ public class Session {
         this.cookies = cookies;
     }
 
+    public void deleteSession() {
+        this.cookies.clear();
+    }
 
 }
