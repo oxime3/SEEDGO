@@ -7,7 +7,10 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -18,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import android.app.Activity;
@@ -51,6 +55,7 @@ import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 
 import com.codemetrictech.seed_go.AnnouncementAdapter;
+import com.codemetrictech.seed_go.MainActivity;
 import com.codemetrictech.seed_go.R;
 import com.codemetrictech.seed_go.Session;
 
@@ -64,6 +69,7 @@ import static com.codemetrictech.seed_go.LoginActivity.session;
 
 
 public class AnnouncementsFragment extends Fragment {
+    Activity activity;
 
     RecyclerView unread;
     RecyclerView read;
@@ -138,8 +144,7 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_announcements_unreadvsread, container, false);
     }
@@ -190,7 +195,7 @@ public class AnnouncementsFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
+/*
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -201,11 +206,30 @@ public class AnnouncementsFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
+*/
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity)
+            activity = (Activity) context;
+    }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void viewAnnouncement(Fragment fragment, String tag) {
+        LinearLayout layout = getView().findViewById(R.id.unreadfirst);
+        layout.removeAllViews();
+
+        ((MainActivity) activity).getSupportFragmentManager().beginTransaction()
+                .replace(R.id.unreadfirst, fragment, tag)
+                .addToBackStack(tag)
+                .commit();
+
     }
 
     /**
@@ -272,78 +296,78 @@ public class AnnouncementsFragment extends Fragment {
 //                    }
 //                }
 
-                // Create an array
-                ArrayList arraylist = new ArrayList<HashMap<String, String>>();
+            // Create an array
+            ArrayList arraylist = new ArrayList<HashMap<String, String>>();
 
-                try {
-                    // Connect to the Website URL
+            try {
+                // Connect to the Website URL
 //                    Connection.Response mBlog = Jsoup.connect(url).cookies(cookies).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
 //                    System.out.println("MBLOG RESPONSE" + mBlog.parse().html());
 //                    Document mBlogDocument = mBlog.parse();
-                    Document doc = Jsoup
-                            .connect(url)
+                Document doc = Jsoup
+                        .connect(url)
 
-                            //.cookies(cookies)
-                            .cookies(session.getCookies())
+                        //.cookies(cookies)
+                        .cookies(session.getCookies())
 
-                            .get();
+                        .get();
 
 
-                    // Identify Table Class "worldpopulation"
-                    for (Element table : doc.select("table[class=forumheaderlist]")) {
+                // Identify Table Class "worldpopulation"
+                for (Element table : doc.select("table[class=forumheaderlist]")) {
 
-                        // Identify all the table row's(tr)
-                        for (Element row : table.select("tr:gt(0)")) {
-                            HashMap<String, String> map = new HashMap<String, String>();
+                    // Identify all the table row's(tr)
+                    for (Element row : table.select("tr:gt(0)")) {
+                        HashMap<String, String> map = new HashMap<String, String>();
 
-                            // Identify all the table cell's(td)
-                            Elements tds = row.select("td");
-                            String test = tds.select("td[class=topic starter]").select("a").toString();
+                        // Identify all the table cell's(td)
+                        Elements tds = row.select("td");
+                        String test = tds.select("td[class=topic starter]").select("a").toString();
 
-                            // Retrive Jsoup Elements
-                            // Get the first td
-                            System.out.println("TEST VALUE" + tds.get(0).text());
-                            if (tds.get(0).text().contains("[UWI]")) {
-                                map.put("header topic", tds.get(0).text());
-                                mBlogTitle = tds.get(0).text();
-                                //}
+                        // Retrive Jsoup Elements
+                        // Get the first td
+                        System.out.println("TEST VALUE" + tds.get(0).text());
+                        if (tds.get(0).text().contains("[UWI]")) {
+                            map.put("header topic", tds.get(0).text());
+                            mBlogTitle = tds.get(0).text();
+                            //}
 
-                                // Get the second td
-                                String test2 = tds.select("td[class=lastpost]").select("a").toString();
-                                System.out.println("TEST2 VALUE" + tds.get(4).text());
-                                map.put("header lastpost", tds.get(4).text());
-                                mBlogUploadDate = tds.get(4).text();
-                                mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);
-                                System.out.println("UPLOAD DATE" + mBlogUploadDate);
-                                // Get the third td
-                                String link = tds.select("td[class=topic starter]").select("a").attr("href");
-                                System.out.println("BLOG ID HREF" + link);
-                                //gte last 6 values of string for the ID
-                                mBlogId = link;
-                                mBlogId = link.substring(link.length() - 4);
-                                System.out.println("SHORTENED BLOG ID VALUE" + mBlogId);
-                                System.out.println(link);
+                            // Get the second td
+                            String test2 = tds.select("td[class=lastpost]").select("a").toString();
+                            System.out.println("TEST2 VALUE" + tds.get(4).text());
+                            map.put("header lastpost", tds.get(4).text());
+                            mBlogUploadDate = tds.get(4).text();
+                            mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);
+                            System.out.println("UPLOAD DATE" + mBlogUploadDate);
+                            // Get the third td
+                            String link = tds.select("td[class=topic starter]").select("a").attr("href");
+                            System.out.println("BLOG ID HREF" + link);
+                            //gte last 6 values of string for the ID
+                            mBlogId = link;
+                            mBlogId = link.substring(link.length() - 4);
+                            System.out.println("SHORTENED BLOG ID VALUE" + mBlogId);
+                            System.out.println(link);
 
-                                arraylist.add(map);
-                                allAnnouncements.add(new Announcement(mBlogTitle, mBlogUploadDate, mBlogId, link));
+                            arraylist.add(map);
+                            allAnnouncements.add(new Announcement(mBlogTitle, mBlogUploadDate, mBlogId, link));
 
-                            }
                         }
                     }
-                    System.out.println(allAnnouncements.size());
-                    allAnnouncements.forEach(System.out::println);
-                    sortAnnouncements();
+                }
+                System.out.println(allAnnouncements.size());
+                allAnnouncements.forEach(System.out::println);
+                sortAnnouncements();
 
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                int i = 0;
-                System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
-                System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
-                if(readannouncementList.size() > 0){
-                    System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
-                }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            int i = 0;
+            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
+            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
+            if(readannouncementList.size() > 0){
+                System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
+            }
 
 //            } catch (IOException e) {
 //                e.printStackTrace();
@@ -393,10 +417,10 @@ public class AnnouncementsFragment extends Fragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), unreadannouncementList);
+            AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, unreadannouncementList);
             unread.setAdapter(adapter);
 
-            AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
+            AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, readannouncementList);
             read.setAdapter(adapter2);
 
 
