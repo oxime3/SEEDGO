@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements
             moveTaskToBack(false);
 
         } else if (getCurrentFragment(backStackEntryCount).equals("Announcement Fragment")) {
-            clearBackStack();
+            getSupportFragmentManager().popBackStackImmediate("Announcements Fragment", 0);
             getSupportFragmentManager()
                     .beginTransaction()
                     .replace(R.id.unreadfirst, AnnouncementsFragment.newInstance(), "Announcements Fragment")
@@ -174,11 +174,6 @@ public class MainActivity extends AppCompatActivity implements
 
     public String getCurrentFragment(int count) {
         return getSupportFragmentManager().getBackStackEntryAt(count - 1).getName();
-    }
-
-    public void clearBackStack() {
-        String root = getSupportFragmentManager().getBackStackEntryAt(0).getName();
-        getSupportFragmentManager().popBackStackImmediate(root, 0);
     }
 
     public class TabsPagerAdapter extends FragmentPagerAdapter {
