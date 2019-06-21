@@ -346,4 +346,42 @@ public class AnnouncementsFragment extends Fragment {
 
 
     }
+    
+    public void announcementsServer(){
+        //convert lists into JSON string
+        Gson gson = new Gson();
+        String dataArrayRead = gson.toJson(readannouncementList);
+        String dataArrayUnread = gson.toJson(unreadannouncementList);
+
+        //send arrays to server using volley
+        final String server_url= "http://127.0.0.1:5000";
+
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        final String result = response.toString();
+                        System.out.println("response: " + result);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        error.printStackTrace();
+                        error.getMessage();
+                    }
+                })
+        {
+            @Override
+            protected Map<String,String> getParams() throws AuthFailureError{
+                Map<String,String> param = new HashMap<String,String>();
+                param.put("readAnnouncements", dataArrayRead); //readAnnouncements is key for server side
+                param.put("unreadAnnouncements", dataArrayUnread); //unreadAnnouncements is key for server side
+
+                return param;
+            }
+        };
+        VolleyConnection.getInstance(getContext()).addRequestQue(stringRequest);
+
+    }
 }
