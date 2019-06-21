@@ -2,8 +2,9 @@
 <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/coordLayout_fileobj"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_height="40dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
 
     <TextView
         android:id="@+id/textView_fileName"
@@ -26,6 +27,6 @@
         android:clickable="true"
         android:focusable="true"
         android:gravity="center_vertical"
-        android:src="@drawable/ic_file_download_black_24dp" />
+        android:src="@drawable/vector_download" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

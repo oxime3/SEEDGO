@@ -59,12 +59,12 @@
                 style="@style/Base.TextAppearance.AppCompat.Subhead"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="true"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
                 android:text="Course Name"
-                android:textColor="@color/colorPrimary"
-                android:textSize="15sp"
-                android:clickable="true"/>
+                android:textColor="@color/black"
+                android:textSize="15sp" />
 
             <View
                 android:id="@+id/divider_cardViewTop"
@@ -78,6 +78,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textview_course_title"
+                android:clickable="true"
                 android:gravity="start"
                 android:lines="1"
                 android:maxLines="5"
@@ -85,9 +86,8 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:text="5 NEW FILES UPLOADED\n2 NEW ASSIGNMENTS UPLOADED"
-                android:textColor="@color/design_default_color_primary"
-                android:textSize="14sp"
-                 android:clickable="true"/>
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imageview_course_files"
@@ -106,6 +106,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/textview_course_files"
+                android:clickable="true"
                 android:gravity="start"
                 android:lines="1"
                 android:maxLines="5"
@@ -113,9 +114,8 @@
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
                 android:text="2 NEW ASSIGNMENTS UPLOADED"
-                android:textColor="@color/design_default_color_primary"
-                android:textSize="14sp"
-                android:clickable="true"/>
+                android:textColor="@color/black"
+                android:textSize="14sp" />
 
 
             <androidx.appcompat.widget.AppCompatImageView

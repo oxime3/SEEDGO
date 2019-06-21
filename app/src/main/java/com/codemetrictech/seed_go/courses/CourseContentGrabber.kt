@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import com.codemetrictech.seed_go.fragments.CoursesFragment
 import com.xwray.groupie.ExpandableGroup
+import com.xwray.groupie.Section
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
@@ -31,13 +32,11 @@ class CourseContentGrabber(val context: Context,
     }
 
     override fun doInBackground(vararg params: Void?): Void? {
-
         val loginForm = Jsoup
                 .connect(url_login)
                 .method(Connection.Method.GET)
                 .userAgent(USER_AGENT)
                 .execute()
-
 
         cookies.putAll(loginForm.cookies())
         credentials["username"] = username
@@ -54,14 +53,13 @@ class CourseContentGrabber(val context: Context,
         cookies.clear()
         cookies.putAll(homepage.cookies())
 
-
         // Connect to the website
         val courseElement = Jsoup
                 .connect(courseContentURL)
                 .cookies(cookies)
                 .get()
 
-//        println("ORIGIN: " + courseElement.select("div[class=course_title]"))
+
         val numOfCourses = courseElement.select("div[class=course_title]").size
 
         //fetch course titles and container URL.
@@ -90,11 +88,9 @@ class CourseContentGrabber(val context: Context,
             val numOfTopics = courseContainer.select("h3[class=sectionname]").size
 
 
-//            var hrefQuery = """a[class=""]"""
             val containerElement = courseContainer
                     .select("div[class=activityinstance]")
                     .select("""a[class=""]""")
-//                    .select("span[class=instancename]")
 
             containerElement.forEach {
                 val elementIdentity = it.text()
@@ -109,14 +105,14 @@ class CourseContentGrabber(val context: Context,
                     val fileURL = elementURL
                     filesMap[fileName] = fileURL
 
-                } else if(elementIdentity.contains("Assignment", true)){
-                    println("ELEMENT: $elementIdentity")
-                    if(elementIdentity.contains("exercise", true)){
-                        val assignmentName = "Weekly Exercise"
-                        assignmentsMap[assignmentName] = it.attributes()["href"]
-                        val test = it.attributes()["href"]
-                        println("REF IS: $test")
-                    }
+                }
+                if(elementIdentity.contains("Assignment", true)){
+                    val assignmentName = "Weekly Exercise"
+                    assignmentsMap[assignmentName] = it.attributes()["href"]
+                    val test = it.attributes()["href"]
+//                    if(elementIdentity.contains("exercise", true)){
+//
+//                    }
                 }
             }
             progressBundle.putString("courseTitle", formattedTitle)
@@ -125,7 +121,7 @@ class CourseContentGrabber(val context: Context,
             progressBundle.putSerializable("assignmentsMap", assignmentsMap)
 
             publishProgress(progressBundle)
-            //coursesList.add(ExpandableCourseCard(formattedTitle, assignmentsMap, filesMap, numOfTopics))
+
         }
 
         Log.d(TAG, "$numOfCourses Courses found.")
@@ -139,23 +135,44 @@ class CourseContentGrabber(val context: Context,
         val courseTitle = resultBundle.getString("courseTitle")!!
         val assignmentMap = resultBundle.getSerializable("assignmentsMap") as HashMap<String, String>
         val filesMap = resultBundle.getSerializable("filesMap") as HashMap<String, String>
-        val numOfTopics = resultBundle.getInt("numberOfTopics")
+        val numOfTopics = resultBundle.getInt("numOfTopics")
 
-        val expandableDataSection = ExpandableDataSection("Week 1", filesMap, assignmentMap)
-        filesMap.entries.forEach {
-            println("IT IS: $it")
-            println("key: ${it.key}\nvalue: ${it.value}\nContext is null?: $context")
-            val fileObj = FileObj(context!!, credentials, it.key, it.value)
-            expandableDataSection.getSection().add(fileObj)
-        }
+//        val fileObjList = ArrayList<FileObj>()
+//        val expandableDataSection = ExpandableDataSection("Topic ONE ", filesMap, assignmentMap)
+//        filesMap.forEach {
+//
+//        }
+//        val i = filesMap.entries.size
+//        for(index in 0..i step 2){
+//
+//            val section = Section()
+//
+//            section.add(fileObj)
+//            expandableDataSection.getExpandableGroup().add(fileObjList[i])
+//            expandableDataSection.getExpandableGroup().add(fileObjList[i+1])
+//        }
 
-        val courseCard = ExpandableCourseCard(courseTitle, filesMap.size, assignmentMap.size, numOfTopics)
-        courseCard.getSection().add(ExpandableGroup(expandableDataSection))
+//        filesMap.entries.forEach {
+//            Log.d(TAG, "key: ${it.key}\nvalue: ${it.value}\nContext is null?: $context")
+//
+//            val fileObj = FileObj(context!!, credentials, it.key, it.value)
+//            fileObjList.add(fileObj)
+//            expandableDataSection.getSection().add(fileObj)
+//
+//        }
+        println("TOPICS: $numOfTopics")
+        val courseCard = ExpandableCourseCard(hostFragment, context, credentials, filesMap, assignmentMap, numOfTopics, courseTitle, filesMap.size, assignmentMap.size)
+//        val courseCard = ExpandableCourseCard(courseTitle, filesMap.size, assignmentMap.size, numOfTopics)
+//        courseCard.getSection().add(ExpandableGroup(expandableDataSection))
+        println("CHECK: " + courseCard.expandableDataSectionList.size)
+//        courseCard.expandableDataSectionList.forEach {
+//            courseCard.getSection().add(ExpandableGroup(it))
+//        }
+        println("CHECK: " + courseCard.expandableDataSectionList.size)
 
         hostFragment.addCourse(courseCard)
 
         Log.d(TAG, "onProgressUpdate()")
-
         super.onProgressUpdate(*values)
     }
 

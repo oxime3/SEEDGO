@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Environment
 import androidx.core.app.ActivityCompat
 import com.codemetrictech.seed_go.R
+import com.google.android.material.snackbar.Snackbar
 import com.xwray.groupie.Item
 import com.xwray.groupie.ViewHolder
 import kotlinx.android.synthetic.main.layout_fileobj.view.*
@@ -31,6 +32,7 @@ class FileObj(val context: Context,
         itemView.textView_fileName.text = fileName
         itemView.imageView_downloadFile.setOnClickListener {
             downloadFile()
+            Snackbar.make(it, "Downloading...", Snackbar.LENGTH_SHORT).show()
         }
     }
 
@@ -84,6 +86,5 @@ class FileObj(val context: Context,
 
         return String(StringBuilder().append("Basic ").append(encodedCredentials))
     }
-
 
 }

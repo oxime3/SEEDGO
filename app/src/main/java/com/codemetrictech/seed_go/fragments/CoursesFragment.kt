@@ -17,7 +17,7 @@ import kotlinx.android.synthetic.main.fragment_courses.view.*
 class CoursesFragment: Fragment(){
     val TAG = "Courses"
 
-    private lateinit var coursesRecyclerView : RecyclerView
+    lateinit var coursesRecyclerView : RecyclerView
     val courseGroupAdapter = GroupAdapter<ViewHolder>()
 
 
@@ -38,6 +38,7 @@ class CoursesFragment: Fragment(){
 
     fun addCourse(expandableCourseCard: ExpandableCourseCard){
         courseGroupAdapter.add(ExpandableGroup(expandableCourseCard))
+
         view?.progress_bar?.hide()
     }
 

@@ -1,26 +1,36 @@
 package com.codemetrictech.seed_go.courses
 
+import android.content.Context
 import android.content.res.Resources
 import android.util.Log
 import android.view.View
 import com.codemetrictech.seed_go.R
+import com.codemetrictech.seed_go.fragments.CoursesFragment
 import com.xwray.groupie.*
 import kotlinx.android.synthetic.main.card_course.view.*
 
 
-class ExpandableCourseCard(private val courseTitle:String = "Title",
-                           private val numOfFiles:Int,
-                           private val numOfAssignments:Int,
-                           private val numOfTopics: Int = 0)
+class ExpandableCourseCard(val hostFrag:CoursesFragment,
+                           val context: Context,
+                           val credentials: HashMap<String, String>,
+                           val filesHashMap: HashMap<String, String>,
+                           val assignmentsHashMap: HashMap<String, String>,
+                           private val numOfTopics: Int ,
+                           private val courseTitle:String = "Title",
+                           private val numOfFiles:Int = filesHashMap.size,
+                           private val numOfAssignments:Int = assignmentsHashMap.size
+                           )
     : Item<ViewHolder>(), ExpandableItem
 {
 
     private val TAG = "courseCard"
 
     private lateinit var expandableGroup: ExpandableGroup
+    val expandableDataSectionList = ArrayList<ExpandableDataSection>()
     private val weekSection = Section()
 
     override fun notifyChanged() {
+        setUpCourse()
         super.notifyChanged()
         Log.d(TAG, "notifyChanged()")
     }
@@ -38,6 +48,7 @@ class ExpandableCourseCard(private val courseTitle:String = "Title",
 
 
     override fun bind(viewHolder: ViewHolder, position: Int) {
+
         val res = Resources.getSystem()
         val itemView = viewHolder.itemView
 
@@ -46,14 +57,49 @@ class ExpandableCourseCard(private val courseTitle:String = "Title",
         itemView.textview_course_assignments.text = "$numOfAssignments NEW ASSIGNMENTS"
 
         initClickerListeners(itemView)
+        hostFrag.coursesRecyclerView.post {
+            setUpCourse()
+        }
+        Log.d(TAG, "bind()")
 
-//        itemView.textview_course_files.text = res
-//                .getString(R.string.getString_numOfFiles, numOfFiles)
-//
-//        itemView.textview_course_assignments.text = res
-//                .getString(R.string.getString_numOfAssignments, numOfAssignments)
     }
 
+    private fun setUpCourse(){
+        Log.d(TAG, "setUpCourse()")
+        val fileObjList = ArrayList<FileObj>()
+        filesHashMap.entries.forEach {
+            fileObjList.add(FileObj(context, credentials, it.key, it.value))
+        }
+
+
+        for(i in 1 .. numOfTopics){
+
+            var topicString = "Topic $i"
+            val expDataSection = ExpandableDataSection(context, credentials, topicString, filesHashMap, assignmentsHashMap, numOfTopics )
+            expandableDataSectionList.add(expDataSection)
+        }
+
+
+        var k = 0
+        expandableDataSectionList.forEach {
+            if(k < fileObjList.size-1){
+                it.getSection().add(fileObjList[k])
+                it.getSection().add(fileObjList[k+1])
+                it.notifyChanged()
+                k+=2
+            }
+        }
+        println("LIST: ${expandableDataSectionList.size}")
+        expandableDataSectionList.forEach {
+//            println("IT IS: $it")
+
+            this.weekSection.add(ExpandableGroup(it))
+            this.weekSection.notifyChanged()
+
+            //notifyChanged()
+        }
+
+    }
 
     private fun initClickerListeners(itemView:View){
         itemView.textview_course_title
@@ -62,6 +108,15 @@ class ExpandableCourseCard(private val courseTitle:String = "Title",
                 })
         itemView.textview_course_files.setOnClickListener {
             this.expandableGroup.onToggleExpanded()
+            Log.d(TAG, "OnToggleExpanded()")
+        }
+
+        itemView.textview_course_assignments.setOnClickListener {
+            this.expandableGroup.onToggleExpanded()
+            println(this.expandableGroup.itemCount)
+            println(this.weekSection.itemCount)
+            println(this.weekSection.groupCount)
+            Log.d(TAG, "OnToggleExpanded()")
         }
     }
 
