@@ -1,7 +1,6 @@
 package com.codemetrictech.seed_go.fragments;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,64 +10,43 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import android.app.Activity;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.text.method.ScrollingMovementMethod;
-import android.widget.ListView;
-import android.widget.TextView;
-
-import com.alespero.expandablecardview.ExpandableCardView;
 import com.codemetrictech.seed_go.DatabaseHelper;
-//import com.joestelmach.natty.*;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.Nullable;
 
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
-import androidx.appcompat.widget.PopupMenu;
-
 import com.codemetrictech.seed_go.AnnouncementAdapter;
+import com.codemetrictech.seed_go.MainActivity;
 import com.codemetrictech.seed_go.R;
-import com.codemetrictech.seed_go.Session;
+import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 
-import java.security.PublicKey;
 import java.util.ArrayList;
-import java.util.List;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
-
 import static com.codemetrictech.seed_go.LoginActivity.session;
 
 
 public class AnnouncementsFragment extends Fragment {
+    private Activity activity;
 
     RecyclerView unread;
     RecyclerView read;
     AnnouncementAdapter adapter;
-    Context mContext;
     DatabaseHelper myDb;
 
     ArrayList<Announcement> allAnnouncements = new ArrayList<>();
@@ -86,18 +64,6 @@ public class AnnouncementsFragment extends Fragment {
 
     Integer seen = 0;
     public static Integer id = 0;
-
-//
-//    final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36 OPR/58.0.3135.127";
-//    String loginFormUrl = "http://seed.gist-edu.cn/login/index.php";
-//    String loginActionUrl = "http://seed.gist-edu.cn/login/index.php";
-//    String username = "UWI180913";
-//    String password = "C1555480@G!C";
-
-    HashMap<String, String> cookies = new HashMap<>();
-    HashMap<String, String> formData = new HashMap<>();
-
-
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -118,12 +84,7 @@ public class AnnouncementsFragment extends Fragment {
 
     // TODO: Rename and change types and number of parameters
     public static AnnouncementsFragment newInstance() {
-        AnnouncementsFragment fragment = new AnnouncementsFragment();
-//        Bundle args = new Bundle();
-//        args.putString(ARG_PARAM1, param1);
-//        args.putString(ARG_PARAM2, param2);
-//        fragment.setArguments(args);
-        return fragment;
+        return new AnnouncementsFragment();
     }
 
     @Override
@@ -138,8 +99,7 @@ public class AnnouncementsFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, final ViewGroup container,
-                             final Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_announcements_unreadvsread, container, false);
     }
@@ -150,7 +110,7 @@ public class AnnouncementsFragment extends Fragment {
         //initDatabase();
         readannouncementList.clear();
         unreadannouncementList.clear();
-        initWidgets();
+        initWidgets(view);
         new JsoupAsyncTask().execute();
     }
 
@@ -174,12 +134,12 @@ public class AnnouncementsFragment extends Fragment {
         }
     }
 
-    private void initWidgets() {
-        unread = (RecyclerView) getView().findViewById(R.id.unreadrv);
+    private void initWidgets(View view) {
+        unread = (RecyclerView) view.findViewById(R.id.unreadrv);
         unread.setLayoutManager(new LinearLayoutManager(getContext()));
 
         //readannouncementList.add(new Announcement(mBlogTitle, mAuthorName, mBlogBody, seen, mBlogId));
-        read = (RecyclerView) getView().findViewById(R.id.readrv);
+        read = (RecyclerView) view.findViewById(R.id.readrv);
         read.setLayoutManager(new LinearLayoutManager(getContext()));
 
     }
@@ -190,7 +150,7 @@ public class AnnouncementsFragment extends Fragment {
             mListener.onFragmentInteraction(uri);
         }
     }
-
+/*
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -201,11 +161,37 @@ public class AnnouncementsFragment extends Fragment {
                     + " must implement OnFragmentInteractionListener");
         }
     }
+*/
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        if (context instanceof Activity)
+            activity = (Activity) context;
+    }
 
     @Override
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    public void viewAnnouncement(String url) {
+        LinearLayout layout = getView().findViewById(R.id.unreadfirst);
+        layout.removeAllViews();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("url", url);
+
+        Fragment fragment = AnnouncementFragment.newInstance();
+        fragment.setArguments(bundle);
+
+        String tag = "Announcement Fragment";
+
+        ((MainActivity) activity).getSupportFragmentManager().beginTransaction()
+                .replace(R.id.unreadfirst, fragment, tag)
+                .addToBackStack(tag)
+                .commit();
     }
 
     /**
@@ -237,117 +223,74 @@ public class AnnouncementsFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... params) {
-//            try {
-//                System.out.println("BACKGROUND OP STARTED");
-//                Connection.Response loginForm = Jsoup.connect(loginFormUrl).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-//
-//                cookies.putAll(loginForm.cookies());
-//                formData.put("username", username);
-//                formData.put("password", password);
-//
-//                Connection.Response homepage = Jsoup.connect(loginActionUrl)
-//                        .cookies(cookies)
-//                        .data(formData)
-//                        .method(Connection.Method.POST)
-//                        .userAgent(USER_AGENT)
-//                        .execute();
-//
-//                System.out.println("LOGGING IN");
-//
-//                cookies.clear();
-//                cookies.putAll(homepage.cookies());
+
+            // Create an array
+            ArrayList arraylist = new ArrayList<HashMap<String, String>>();
+
+            try {
+                // Connect to the Website URL
+                Document doc = Jsoup
+                        .connect(url)
+                        .cookies(session.getCookies())
+                        .get();
 
 
-//              Get from db
-//                Cursor result = myDb.getAllData();
-//                if (result.getCount() ==  0){
-//
-//                }
-//                else{
-//                    StringBuffer buffer = new StringBuffer();
-//                    while (result.moveToNext()){
-//                        anId=result.getString(0);
-//                        anSeen = result.getInt(1);
-//                        readannouncementID.add(new Announcement(anId,anSeen));
-//                    }
-//                }
+                // Identify Table Class "worldpopulation"
+                for (Element table : doc.select("table[class=forumheaderlist]")) {
 
-                // Create an array
-                ArrayList arraylist = new ArrayList<HashMap<String, String>>();
+                    // Identify all the table row's(tr)
+                    for (Element row : table.select("tr:gt(0)")) {
+                        HashMap<String, String> map = new HashMap<String, String>();
 
-                try {
-                    // Connect to the Website URL
-//                    Connection.Response mBlog = Jsoup.connect(url).cookies(cookies).method(Connection.Method.GET).userAgent(USER_AGENT).execute();
-//                    System.out.println("MBLOG RESPONSE" + mBlog.parse().html());
-//                    Document mBlogDocument = mBlog.parse();
-                    Document doc = Jsoup
-                            .connect(url)
+                        // Identify all the table cell's(td)
+                        Elements tds = row.select("td");
+                        String test = tds.select("td[class=topic starter]").select("a").toString();
 
-                            .cookies(cookies)
-                            //.cookies(session.getCookies())
+                        // Retrive Jsoup Elements
+                        // Get the first td
+                        System.out.println("TEST VALUE" + tds.get(0).text());
+                        if (tds.get(0).text().contains("[UWI]")) {
+                            map.put("header topic", tds.get(0).text());
+                            mBlogTitle = tds.get(0).text();
+                            //}
 
-                            .get();
+                            // Get the second td
+                            String test2 = tds.select("td[class=lastpost]").select("a").toString();
+                            System.out.println("TEST2 VALUE" + tds.get(4).text());
+                            map.put("header lastpost", tds.get(4).text());
+                            mBlogUploadDate = tds.get(4).text();
+                            mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);
+                            System.out.println("UPLOAD DATE" + mBlogUploadDate);
+                            // Get the third td
+                            String link = tds.select("td[class=topic starter]").select("a").attr("href");
+                            System.out.println("BLOG ID HREF" + link);
+                            //get last 6 values of string for the ID
+                            mBlogId = link;
+                            mBlogId = link.substring(link.length() - 4);
+                            System.out.println("SHORTENED BLOG ID VALUE" + mBlogId);
+                            System.out.println(link);
 
+                            arraylist.add(map);
+                            allAnnouncements.add(new Announcement(mBlogTitle, mBlogUploadDate, mBlogId, link));
 
-                    // Identify Table Class "worldpopulation"
-                    for (Element table : doc.select("table[class=forumheaderlist]")) {
-
-                        // Identify all the table row's(tr)
-                        for (Element row : table.select("tr:gt(0)")) {
-                            HashMap<String, String> map = new HashMap<String, String>();
-
-                            // Identify all the table cell's(td)
-                            Elements tds = row.select("td");
-                            String test = tds.select("td[class=topic starter]").select("a").toString();
-
-                            // Retrive Jsoup Elements
-                            // Get the first td
-                            System.out.println("TEST VALUE" + tds.get(0).text());
-                            if (tds.get(0).text().contains("[UWI]")) {
-                                map.put("header topic", tds.get(0).text());
-                                mBlogTitle = tds.get(0).text();
-                                //}
-
-                                // Get the second td
-                                String test2 = tds.select("td[class=lastpost]").select("a").toString();
-                                System.out.println("TEST2 VALUE" + tds.get(4).text());
-                                map.put("header lastpost", tds.get(4).text());
-                                mBlogUploadDate = tds.get(4).text();
-                                mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);
-                                System.out.println("UPLOAD DATE" + mBlogUploadDate);
-                                // Get the third td
-                                String link = tds.select("td[class=topic starter]").select("a").attr("href");
-                                System.out.println("BLOG ID HREF" + link);
-                                //gte last 6 values of string for the ID
-                                mBlogId = link;
-                                mBlogId = link.substring(link.length() - 4);
-                                System.out.println("SHORTENED BLOG ID VALUE" + mBlogId);
-                                System.out.println(link);
-
-                                arraylist.add(map);
-                                allAnnouncements.add(new Announcement(mBlogTitle, mBlogUploadDate, mBlogId, link));
-
-                            }
                         }
                     }
-                    System.out.println(allAnnouncements.size());
-                    allAnnouncements.forEach(System.out::println);
-                    sortAnnouncements();
-
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
                 }
-                int i = 0;
-                System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
-                System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
-                if(readannouncementList.size() > 0){
-                    System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
-                }
+                System.out.println(allAnnouncements.size());
+                allAnnouncements.forEach(System.out::println);
+                sortAnnouncements();
 
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+            int i = 0;
+            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
+            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
+            if(readannouncementList.size() > 0){
+                System.out.println("READ ANNOUNCEMENT ID: " + readannouncementList.get(i).getId());
+            }
+
             return null;
         }
 
@@ -393,18 +336,11 @@ public class AnnouncementsFragment extends Fragment {
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
 
-            AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), unreadannouncementList);
+            AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, unreadannouncementList);
             unread.setAdapter(adapter);
 
-            AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), readannouncementList);
+            AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, readannouncementList);
             read.setAdapter(adapter2);
-
-
-//            adapter.notifyDataSetChanged();
-//            adapter2.notifyDataSetChanged();
-//
-//            System.out.println("UNREAD ANNOUNCEMENTS: " + unreadannouncementList);
-//            System.out.println("READ ANNOUNCEMENTS: " + readannouncementList);
 
         }
 

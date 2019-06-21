@@ -18,11 +18,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.alespero.expandablecardview.ExpandableCardView;
 import com.codemetrictech.seed_go.R;
 import com.rachum.amir.util.range.Range;
 
-//import org.jetbrains.annotations.NotNull;
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -38,13 +37,15 @@ import static com.codemetrictech.seed_go.LoginActivity.session;
 
 
 public class AnnouncementFragment extends Fragment {
+    private Activity activity;
+
     private TextView announcement_title;
     private TextView announcement_author_datetime;
     private LinearLayout announcement_body;
     private TextView body_text;
+    private ExpandableCardView expandableCardView;
     private ListView attachment_list;
 
-    private Activity activity;
     private String url;
     private String author;
     private String datetime;
@@ -53,8 +54,8 @@ public class AnnouncementFragment extends Fragment {
     private HashMap<Integer, List<Object>> table_values = new HashMap<>();
     private HashMap<Integer, List<String>> files = new HashMap<>();
 
-
-    static Fragment newInstance() { return new AnnouncementFragment();
+    public static Fragment newInstance() {
+        return new AnnouncementFragment();
     }
 
     @Override
@@ -80,23 +81,19 @@ public class AnnouncementFragment extends Fragment {
 
         @Override
         protected void onPreExecute() {
-            System.out.println("IN ANNOUNCEMENT FRAGMENT");
             super.onPreExecute();
             url = getArguments().getString("url");
-
-            System.out.println("URL RECEIVED FROM BUNDLE: " + url);
 
             announcement_title = getView().findViewById(R.id.announcement_title);
             announcement_author_datetime = getView().findViewById(R.id.announcement_author_datetime);
             announcement_body = getView().findViewById(R.id.announcement_body);
             body_text = getView().findViewById(R.id.body_text);
-            attachment_list = getView().findViewById(R.id.attachment_list);
         }
+
 
         @Override
         protected Void doInBackground(Void... params) {
             try {
-
                 // Connect to the web page
                 Document announcement = Jsoup
                         .connect(url)
@@ -136,10 +133,13 @@ public class AnnouncementFragment extends Fragment {
 
                     // Checking for attachments
                     Elements mElementAttachments = announcement.select("div[class=attachments]");
-                    if (!mElementAttachments.isEmpty())
+                    if (!mElementAttachments.isEmpty()) {
+                        expandableCardView = getView().findViewById(R.id.announcement_attachments);
+                        activity.runOnUiThread(() -> expandableCardView.setVisibility(View.VISIBLE));
+                        attachment_list = getView().findViewById(R.id.attachment_list);
                         retrieveAttachments(mElementAttachments.first());
+                    }
                 }
-                System.out.println("DOCUMENT BODY " + announcement.text());
 
             }
             catch (IOException e) {
@@ -253,7 +253,6 @@ public class AnnouncementFragment extends Fragment {
         }
 
 
-
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
@@ -269,11 +268,8 @@ public class AnnouncementFragment extends Fragment {
 
             body_text.setText(body);
 
-            attachment_list.setAdapter(new CustomListViewAdapter(activity, files));
-
+            if (!files.isEmpty())
+                attachment_list.setAdapter(new CustomListViewAdapter(activity, files));
         }
-
     }
-
-
 }
