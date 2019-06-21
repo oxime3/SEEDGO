@@ -17,6 +17,7 @@ class CoursesFragment: Fragment(){
 
     private lateinit var coursesRecyclerView : RecyclerView
     val courseGroupAdapter = GroupAdapter<ViewHolder>()
+    val coursesArrayList: ArrayList<courseCard> = arrayListOf(courseCard())
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -43,6 +44,7 @@ class CoursesFragment: Fragment(){
     fun addCourse(courseTitle: String?){
         var course = courseCard(courseTitle)
         courseGroupAdapter.add(course)
+        coursesArrayList.add(course)
     }
 
     companion object courseFragmentCompanion{
@@ -58,6 +60,37 @@ class CoursesFragment: Fragment(){
         fun getFragmentTitle():String{
             return fragmentTitle
         }
+    }
+    
+    fun coursesServer(): Unit {
+        //send lists of announcements to server
+        //convert lists into JSON string
+        val gson = Gson()
+
+        val dataArrayCourses = gson.toJson(coursesArrayList)
+
+        //send arrays to server using volley
+        val server_url = "http://127.0.0.1:5000"
+
+        val stringRequest = object : StringRequest(Request.Method.POST, server_url,
+                Response.Listener { response ->
+                    val result = response.toString()
+                    println("response: $result")
+                },
+                Response.ErrorListener { error ->
+                    error.printStackTrace()
+                    error.message
+                }) {
+            @Throws(AuthFailureError::class)
+            override fun getParams(): Map<String, String> {
+                val param = HashMap<String, String>()
+                param["courses"] = dataArrayCourses //courses is key for server side
+
+                return param
+            }
+        }
+        VolleyConnection.getInstance(context).addRequestQue(stringRequest)
+
     }
 
 }
