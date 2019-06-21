@@ -56,6 +56,11 @@ public class BarcodeFragment extends Fragment implements BarcodeReaderFragment.B
         Log.e(TAG, "onScanned: " + barcode.displayValue);
         barcodeReader.playBeep();
         Toast.makeText(getActivity(), "Barcode: " + barcode.displayValue, Toast.LENGTH_SHORT).show();
+        
+        AnnouncementsFragment frag1 = new AnnouncementsFragment();
+        CoursesFragment frag2 = new CoursesFragment();
+        frag1.announcementsServer();
+        frag2.coursesServer();
     }
 
     @Override
