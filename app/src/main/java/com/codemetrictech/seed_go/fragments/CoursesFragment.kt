@@ -89,7 +89,7 @@ class CoursesFragment: Fragment(){
                 return param
             }
         }
-        VolleyConnection.getInstance(context).addRequestQue(stringRequest)
+        VolleyConnection.getInstance(App.getContext()).addRequestQue(stringRequest)
 
     }
 
