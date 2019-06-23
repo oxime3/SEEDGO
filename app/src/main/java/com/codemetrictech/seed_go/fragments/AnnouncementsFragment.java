@@ -381,7 +381,7 @@ public class AnnouncementsFragment extends Fragment {
                 return param;
             }
         };
-        VolleyConnection.getInstance(getContext()).addRequestQue(stringRequest);
+        VolleyConnection.getInstance(App.getContext()).addRequestQue(stringRequest);
 
     }
 }
