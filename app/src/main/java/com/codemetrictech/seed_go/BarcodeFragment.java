@@ -25,6 +25,8 @@ public class BarcodeFragment extends Fragment implements BarcodeReaderFragment.B
     private static final String TAG = BarcodeFragment.class.getSimpleName();
 
     private BarcodeReaderFragment barcodeReader;
+    AnnouncementsFragment announcementsFragment;
+    CoursesFragment coursesFragment;
 
     public static BarcodeFragment newInstance() {
         BarcodeFragment fragment = new BarcodeFragment();
@@ -56,6 +58,9 @@ public class BarcodeFragment extends Fragment implements BarcodeReaderFragment.B
         Log.e(TAG, "onScanned: " + barcode.displayValue);
         barcodeReader.playBeep();
         Toast.makeText(getActivity(), "Barcode: " + barcode.displayValue, Toast.LENGTH_SHORT).show();
+        
+        announcementsFragment.announcementsServer();
+        coursesFragment.coursesServer();
     }
 
     @Override
