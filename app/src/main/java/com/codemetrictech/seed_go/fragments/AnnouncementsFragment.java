@@ -1,23 +1,30 @@
 package com.codemetrictech.seed_go.fragments;
 
+import android.app.Activity;
 import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
-import android.app.Activity;
-import android.os.AsyncTask;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.codemetrictech.seed_go.AnnouncementAdapter;
 import com.codemetrictech.seed_go.DatabaseHelper;
+import com.codemetrictech.seed_go.MainActivity;
+import com.codemetrictech.seed_go.R;
+import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -25,17 +32,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import androidx.annotation.Nullable;
-
-import com.codemetrictech.seed_go.AnnouncementAdapter;
-import com.codemetrictech.seed_go.MainActivity;
-import com.codemetrictech.seed_go.R;
-import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
-
-import java.util.ArrayList;
+import java.util.Map;
 
 import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
 import static com.codemetrictech.seed_go.LoginActivity.session;
