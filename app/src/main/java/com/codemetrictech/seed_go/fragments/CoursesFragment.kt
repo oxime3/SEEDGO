@@ -7,17 +7,24 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.android.volley.AuthFailureError
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.StringRequest
 import com.codemetrictech.seed_go.R
-import com.codemetrictech.seed_go.courses.courseCard
+import com.codemetrictech.seed_go.courses.ExpandableCourseCard
+import com.google.gson.Gson
+import com.xwray.groupie.ExpandableGroup
 import com.xwray.groupie.GroupAdapter
 import com.xwray.groupie.ViewHolder
+import kotlinx.android.synthetic.main.fragment_courses.view.*
 
 class CoursesFragment: Fragment(){
     val TAG = "Courses"
 
-    private lateinit var coursesRecyclerView : RecyclerView
+    lateinit var coursesRecyclerView : RecyclerView
     val courseGroupAdapter = GroupAdapter<ViewHolder>()
-    val coursesArrayList: ArrayList<courseCard> = arrayListOf(courseCard())
+    val coursesArrayList: ArrayList<ExpandableCourseCard> = ArrayList<ExpandableCourseCard>()
 
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
@@ -25,26 +32,20 @@ class CoursesFragment: Fragment(){
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        view.progress_bar.show()
         super.onViewCreated(view, savedInstanceState)
-
          coursesRecyclerView = view.findViewById(R.id.recyclerView_fragment_courses)
 
         coursesRecyclerView.apply {
             layoutManager = LinearLayoutManager(context)
             adapter = courseGroupAdapter
         }
-
-        addCourse("SWEN3000: IOS Development")
-        addCourse("SWEN3004: Web and Mobile II")
-        addCourse("SWEN3156: Software Testing")
-        addCourse("SWEN3002: Android Development")
-
     }
 
-    fun addCourse(courseTitle: String?){
-        var course = courseCard(courseTitle)
-        courseGroupAdapter.add(course)
-        coursesArrayList.add(course)
+    fun addCourse(expandableCourseCard: ExpandableCourseCard){
+        courseGroupAdapter.add(ExpandableGroup(expandableCourseCard))
+        coursesArrayList.add(expandableCourseCard)
+        view?.progress_bar?.hide()
     }
 
     companion object courseFragmentCompanion{
@@ -61,7 +62,7 @@ class CoursesFragment: Fragment(){
             return fragmentTitle
         }
     }
-    
+
     fun coursesServer(): Unit {
         //send lists of announcements to server
         //convert lists into JSON string
@@ -89,7 +90,7 @@ class CoursesFragment: Fragment(){
                 return param
             }
         }
-        VolleyConnection.getInstance(context).addRequestQue(stringRequest)
+        //VolleyConnection.getInstance(context).addRequestQue(stringRequest)
 
     }
 
