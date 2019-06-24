@@ -18,13 +18,18 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.Request;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.codemetrictech.seed_go.AnnouncementAdapter;
+import com.codemetrictech.seed_go.App;
 import com.codemetrictech.seed_go.DatabaseHelper;
 import com.codemetrictech.seed_go.MainActivity;
 import com.codemetrictech.seed_go.R;
+import com.codemetrictech.seed_go.VolleyConnection;
 import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
+import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -381,7 +386,7 @@ public class AnnouncementsFragment extends Fragment {
                 return param;
             }
         };
-        VolleyConnection.getInstance(getContext()).addRequestQue(stringRequest);
+        VolleyConnection.getInstance(App.getContext()).addRequestQue(stringRequest);
 
     }
 }

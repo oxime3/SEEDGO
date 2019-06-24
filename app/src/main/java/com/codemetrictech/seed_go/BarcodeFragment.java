@@ -1,6 +1,5 @@
 package com.codemetrictech.seed_go;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseArray;
@@ -11,12 +10,12 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
+import com.codemetrictech.seed_go.fragments.CoursesFragment;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.notbytes.barcode_reader.BarcodeReaderFragment;
-
 
 import java.util.List;
 import java.util.Objects;
@@ -25,6 +24,8 @@ public class BarcodeFragment extends Fragment implements BarcodeReaderFragment.B
     private static final String TAG = BarcodeFragment.class.getSimpleName();
 
     private BarcodeReaderFragment barcodeReader;
+    AnnouncementsFragment announcementsFragment;
+    CoursesFragment coursesFragment;
 
     public static BarcodeFragment newInstance() {
         BarcodeFragment fragment = new BarcodeFragment();
@@ -56,6 +57,9 @@ public class BarcodeFragment extends Fragment implements BarcodeReaderFragment.B
         Log.e(TAG, "onScanned: " + barcode.displayValue);
         barcodeReader.playBeep();
         Toast.makeText(getActivity(), "Barcode: " + barcode.displayValue, Toast.LENGTH_SHORT).show();
+        
+        announcementsFragment.announcementsServer();
+        coursesFragment.coursesServer();
     }
 
     @Override
@@ -85,4 +89,6 @@ public class BarcodeFragment extends Fragment implements BarcodeReaderFragment.B
     public void onCameraPermissionDenied() {
         Toast.makeText(getActivity(), "Camera permission denied!", Toast.LENGTH_LONG).show();
     }
+
+
 }

@@ -1,6 +1,7 @@
 package com.codemetrictech.seed_go.fragments
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,9 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.volley.AuthFailureError
 import com.android.volley.Request
 import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
+import com.android.volley.toolbox.JsonObjectRequest
 import com.codemetrictech.seed_go.R
+import com.codemetrictech.seed_go.VolleyConnection
 import com.codemetrictech.seed_go.courses.ExpandableCourseCard
+import com.codemetrictech.seed_go.utils.WebConfig
 import com.google.gson.Gson
 import com.xwray.groupie.ExpandableGroup
 import com.xwray.groupie.GroupAdapter
@@ -45,6 +48,7 @@ class CoursesFragment: Fragment(){
     fun addCourse(expandableCourseCard: ExpandableCourseCard){
         courseGroupAdapter.add(ExpandableGroup(expandableCourseCard))
         coursesArrayList.add(expandableCourseCard)
+        coursesServer()
         view?.progress_bar?.hide()
     }
 
@@ -67,31 +71,33 @@ class CoursesFragment: Fragment(){
         //send lists of announcements to server
         //convert lists into JSON string
         val gson = Gson()
+        val config = WebConfig()
 
-        val dataArrayCourses = gson.toJson(coursesArrayList)
+        coursesArrayList.forEach {
+            var jsonObj = it.toJson()
+            Log.d(TAG, jsonObj.toString())
 
-        //send arrays to server using volley
-        val server_url = "http://127.0.0.1:5000"
+            //send JSON to server using volley
+            val server_url = config.URL_POST_COURSE
 
-        val stringRequest = object : StringRequest(Request.Method.POST, server_url,
-                Response.Listener { response ->
-                    val result = response.toString()
-                    println("response: $result")
-                },
-                Response.ErrorListener { error ->
-                    error.printStackTrace()
-                    error.message
-                }) {
-            @Throws(AuthFailureError::class)
-            override fun getParams(): Map<String, String> {
-                val param = HashMap<String, String>()
-                param["courses"] = dataArrayCourses //courses is key for server side
+            val stringRequest = object : JsonObjectRequest(Request.Method.POST,  server_url, jsonObj,
+                    Response.Listener { response ->
+                        val result = response.toString()
+                        println("response: $result")
+                    },
+                    Response.ErrorListener { error ->
+                        error.printStackTrace()
+                        error.message
+                    }) {
+                @Throws(AuthFailureError::class)
+                override fun getParams(): Map<String, String> {
+                    val param = HashMap<String, String>()
+                    param["courses"] = "IOS DEV" //courses is key for server side
 
-                return param
+                    return param
+                }
             }
+            VolleyConnection.getInstance(context).addRequestQue(stringRequest)
         }
-        //VolleyConnection.getInstance(context).addRequestQue(stringRequest)
-
     }
-
 }

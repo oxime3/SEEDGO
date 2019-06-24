@@ -6,25 +6,23 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 
-import com.codemetrictech.seed_go.utils.*;
+import com.codemetrictech.seed_go.utils.InputValidator;
+import com.codemetrictech.seed_go.utils.Preferences;
 import com.codemetrictech.seed_go.utils.Preferences.PrefController;
-
-import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+
+import java.io.IOException;
+import java.util.HashMap;
 
 public class LoginActivity extends Activity {
     private EditText username;
@@ -180,8 +178,11 @@ public class LoginActivity extends Activity {
 
                 cookies.putAll(loginForm.cookies());
 
-                credentials.put("username", username.getText().toString());
-                credentials.put("password", password.getText().toString());
+                runOnUiThread(() -> {
+                    credentials.put("username", username.getText().toString());
+                    credentials.put("password", password.getText().toString());
+                });
+
 
                 Connection.Response homepage = Jsoup
                         .connect(url_login)

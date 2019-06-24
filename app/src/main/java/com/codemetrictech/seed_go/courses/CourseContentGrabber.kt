@@ -5,8 +5,6 @@ import android.os.AsyncTask
 import android.os.Bundle
 import android.util.Log
 import com.codemetrictech.seed_go.fragments.CoursesFragment
-import com.xwray.groupie.ExpandableGroup
-import com.xwray.groupie.Section
 import org.jsoup.Connection
 import org.jsoup.Jsoup
 
@@ -29,6 +27,10 @@ class CourseContentGrabber(val context: Context,
     init {
         Log.d(TAG, "Getting seed content...")
         this.execute()
+    }
+
+    override fun onPreExecute() {
+        Log.d(TAG, "Started fetching course content...")
     }
 
     override fun doInBackground(vararg params: Void?): Void? {
@@ -206,8 +208,7 @@ class CourseContentGrabber(val context: Context,
     }
 
     override fun onPostExecute(result: Void?) {
-        //coursesList.forEach { hostFragment.addCourse(it) }
-        super.onPostExecute(result)
+    //hostFragment.coursesServer()
     }
 
 

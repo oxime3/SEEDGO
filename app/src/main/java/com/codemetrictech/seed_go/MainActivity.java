@@ -20,7 +20,7 @@ import androidx.fragment.app.FragmentPagerAdapter;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
-import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
+import com.codemetrictech.seed_go.courses.CourseContentGrabber;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 import com.codemetrictech.seed_go.fragments.CoursesFragment;
 import com.google.android.gms.vision.barcode.Barcode;
@@ -72,6 +72,7 @@ public class MainActivity extends AppCompatActivity implements
 
         FragmentList.add(AnnouncementsFragment.newInstance());
         FragmentList.add(new CoursesFragment());
+        CourseContentGrabber courseContentGrabber = new CourseContentGrabber(this, (CoursesFragment)FragmentList.get(1));
 
         String tab1_title = ((AnnouncementsFragment)FragmentList.get(0)).getFragmentTitle();
         String tab2_title = ((CoursesFragment)FragmentList.get(1)).getTAG();

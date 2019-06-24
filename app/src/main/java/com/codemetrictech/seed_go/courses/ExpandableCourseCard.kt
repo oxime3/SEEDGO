@@ -8,6 +8,7 @@ import com.codemetrictech.seed_go.R
 import com.codemetrictech.seed_go.fragments.CoursesFragment
 import com.xwray.groupie.*
 import kotlinx.android.synthetic.main.card_course.view.*
+import org.json.JSONObject
 
 
 class ExpandableCourseCard(val hostFrag:CoursesFragment,
@@ -28,6 +29,16 @@ class ExpandableCourseCard(val hostFrag:CoursesFragment,
     private lateinit var expandableGroup: ExpandableGroup
     val expandableDataSectionList = ArrayList<ExpandableDataSection>()
     private val weekSection = Section()
+
+    fun toJson(): JSONObject{
+         var json = JSONObject()
+        json.put("courseTitle", courseTitle)
+        json.put("numOfTopics", numOfTopics)
+        json.put("numOfFiles", numOfFiles)
+        json.put("numOfAssignments", numOfAssignments)
+        return json
+
+    }
 
     override fun notifyChanged() {
         setUpCourse()
