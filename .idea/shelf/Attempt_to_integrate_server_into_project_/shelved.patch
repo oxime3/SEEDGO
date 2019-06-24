@@ -1,0 +1,194 @@
+Index: gradle/wrapper/gradle-wrapper.properties
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>#Sun Apr 21 20:53:23 CST 2019\r\ndistributionBase=GRADLE_USER_HOME\r\ndistributionPath=wrapper/dists\r\nzipStoreBase=GRADLE_USER_HOME\r\nzipStorePath=wrapper/dists\r\ndistributionUrl=https\\://services.gradle.org/distributions/gradle-5.1.1-all.zip\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>windows-1252
+===================================================================
+--- gradle/wrapper/gradle-wrapper.properties	(date 1561105201000)
++++ gradle/wrapper/gradle-wrapper.properties	(date 1561124342877)
+@@ -1,4 +1,4 @@
+-#Sun Apr 21 20:53:23 CST 2019
++gra#Sun Apr 21 20:53:23 CST 2019
+ distributionBase=GRADLE_USER_HOME
+ distributionPath=wrapper/dists
+ zipStoreBase=GRADLE_USER_HOME
+Index: app/src/main/java/com/codemetrictech/seed_go/fragments/AnnouncementsFragment.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.codemetrictech.seed_go.fragments;\r\n\r\nimport android.content.Context;\r\nimport android.database.Cursor;\r\nimport android.net.Uri;\r\nimport android.os.Bundle;\r\n\r\nimport androidx.annotation.NonNull;\r\nimport androidx.fragment.app.Fragment;\r\nimport androidx.recyclerview.widget.LinearLayoutManager;\r\nimport androidx.recyclerview.widget.RecyclerView;\r\n\r\nimport android.view.LayoutInflater;\r\nimport android.view.View;\r\nimport android.view.ViewGroup;\r\nimport android.widget.LinearLayout;\r\n\r\nimport android.app.Activity;\r\nimport android.os.AsyncTask;\r\nimport com.codemetrictech.seed_go.DatabaseHelper;\r\n\r\nimport org.jsoup.Jsoup;\r\nimport org.jsoup.nodes.Document;\r\nimport org.jsoup.nodes.Element;\r\nimport org.jsoup.select.Elements;\r\n\r\nimport java.io.IOException;\r\nimport java.util.HashMap;\r\nimport java.util.List;\r\n\r\nimport androidx.annotation.Nullable;\r\n\r\nimport com.codemetrictech.seed_go.AnnouncementAdapter;\r\nimport com.codemetrictech.seed_go.MainActivity;\r\nimport com.codemetrictech.seed_go.R;\r\nimport com.codemetrictech.seed_go.announcement.AnnouncementFragment;\r\n\r\nimport java.util.ArrayList;\r\n\r\nimport static com.codemetrictech.seed_go.DatabaseHelper.col_1;\r\nimport static com.codemetrictech.seed_go.LoginActivity.session;\r\n\r\n\r\npublic class AnnouncementsFragment extends Fragment {\r\n    private Activity activity;\r\n\r\n    RecyclerView unread;\r\n    RecyclerView read;\r\n    AnnouncementAdapter adapter;\r\n    DatabaseHelper myDb;\r\n\r\n    ArrayList<Announcement> allAnnouncements = new ArrayList<>();\r\n    static List<Announcement> unreadannouncementList = new ArrayList<>();\r\n    static List<Announcement> readannouncementList = new ArrayList<>();\r\n    static ArrayList<Announcement> readannouncementID = new ArrayList<>();\r\n\r\n    String url = \"http://seed.gist-edu.cn/mod/forum/view.php?f=12&showall=1\";\r\n    String mBlogUploadDate;\r\n    String mBlogTitle;\r\n    String mBlogId;\r\n\r\n    String anId;\r\n    Integer anSeen;\r\n\r\n    Integer seen = 0;\r\n    public static Integer id = 0;\r\n\r\n    // TODO: Rename parameter arguments, choose names that match\r\n    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER\r\n    private static final String ARG_PARAM1 = \"param1\";\r\n    private static final String ARG_PARAM2 = \"param2\";\r\n    private final String FragmentTitle = \"ANNOUNCEMENTS\";\r\n\r\n    // TODO: Rename and change types of parameters\r\n    private String mParam1;\r\n    private String mParam2;\r\n\r\n    private OnFragmentInteractionListener mListener;\r\n\r\n    public AnnouncementsFragment() {\r\n        // Required empty public constructor\r\n    }\r\n\r\n\r\n    // TODO: Rename and change types and number of parameters\r\n    public static AnnouncementsFragment newInstance() {\r\n        return new AnnouncementsFragment();\r\n    }\r\n\r\n    @Override\r\n    public void onCreate(Bundle savedInstanceState) {\r\n        super.onCreate(savedInstanceState);\r\n        if (getArguments() != null) {\r\n            mParam1 = getArguments().getString(ARG_PARAM1);\r\n            mParam2 = getArguments().getString(ARG_PARAM2);\r\n        }\r\n\r\n        myDb = new DatabaseHelper(getContext());\r\n    }\r\n\r\n    @Override\r\n    public View onCreateView(@NonNull LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {\r\n        // Inflate the layout for this fragment\r\n        return inflater.inflate(R.layout.fragment_announcements_unreadvsread, container, false);\r\n    }\r\n\r\n    @Override\r\n    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {\r\n        super.onViewCreated(view, savedInstanceState);\r\n        //initDatabase();\r\n        readannouncementList.clear();\r\n        unreadannouncementList.clear();\r\n        initWidgets(view);\r\n        new JsoupAsyncTask().execute();\r\n    }\r\n\r\n    private void initDatabase() {\r\n        Cursor result = myDb.getAllData();\r\n        System.out.println(\"DB COUNT ON START:\" + result.getCount());\r\n        if (result.getCount() ==  0){\r\n            System.out.println(\"DB EMPTY.\");\r\n        }\r\n        else{\r\n            StringBuffer buffer = new StringBuffer();\r\n            readannouncementID.clear();\r\n            readannouncementList.clear();\r\n            unreadannouncementList.clear();\r\n            while (result.moveToNext()){\r\n                anId = result.getString(0);\r\n                System.out.println(\"DB HAS CONTENT.\");\r\n                System.out.println(\"ANNOUNCEMENT ID: \" + anId);\r\n                //readannouncementID.add(new Announcement(anId));\r\n            }\r\n        }\r\n    }\r\n\r\n    private void initWidgets(View view) {\r\n        unread = (RecyclerView) view.findViewById(R.id.unreadrv);\r\n        unread.setLayoutManager(new LinearLayoutManager(getContext()));\r\n\r\n        //readannouncementList.add(new Announcement(mBlogTitle, mAuthorName, mBlogBody, seen, mBlogId));\r\n        read = (RecyclerView) view.findViewById(R.id.readrv);\r\n        read.setLayoutManager(new LinearLayoutManager(getContext()));\r\n\r\n    }\r\n\r\n    // TODO: Rename method, update argument and hook method into UI event\r\n    public void onButtonPressed(Uri uri) {\r\n        if (mListener != null) {\r\n            mListener.onFragmentInteraction(uri);\r\n        }\r\n    }\r\n/*\r\n    @Override\r\n    public void onAttach(Context context) {\r\n        super.onAttach(context);\r\n        if (context instanceof OnFragmentInteractionListener) {\r\n            mListener = (OnFragmentInteractionListener) context;\r\n        } else {\r\n            throw new RuntimeException(context.toString()\r\n                    + \" must implement OnFragmentInteractionListener\");\r\n        }\r\n    }\r\n*/\r\n\r\n    @Override\r\n    public void onAttach(@NonNull Context context) {\r\n        super.onAttach(context);\r\n        if (context instanceof Activity)\r\n            activity = (Activity) context;\r\n    }\r\n\r\n    @Override\r\n    public void onDetach() {\r\n        super.onDetach();\r\n        mListener = null;\r\n    }\r\n\r\n    public void viewAnnouncement(String url) {\r\n        LinearLayout layout = getView().findViewById(R.id.unreadfirst);\r\n        layout.removeAllViews();\r\n\r\n        Bundle bundle = new Bundle();\r\n        bundle.putString(\"url\", url);\r\n\r\n        Fragment fragment = AnnouncementFragment.newInstance();\r\n        fragment.setArguments(bundle);\r\n\r\n        String tag = \"Announcement Fragment\";\r\n\r\n        ((MainActivity) activity).getSupportFragmentManager().beginTransaction()\r\n                .replace(R.id.unreadfirst, fragment, tag)\r\n                .addToBackStack(tag)\r\n                .commit();\r\n    }\r\n\r\n    /**\r\n     * This interface must be implemented by activities that contain this\r\n     * fragment to allow an interaction in this fragment to be communicated\r\n     * to the activity and potentially other fragments contained in that\r\n     * activity.\r\n     * <p>\r\n     * See the Android Training lesson <a href=\r\n     * \"http://developer.android.com/training/basics/fragments/communicating.html\"\r\n     * >Communicating with Other Fragments</a> for more information.\r\n     */\r\n    public interface OnFragmentInteractionListener {\r\n        // TODO: Update argument type and name\r\n        void onFragmentInteraction(Uri uri);\r\n    }\r\n\r\n    public String getFragmentTitle(){\r\n        return this.FragmentTitle;\r\n    }\r\n\r\n\r\n    private class JsoupAsyncTask extends AsyncTask<Void, Void, Void> {\r\n\r\n        @Override\r\n        protected void onPreExecute() {\r\n            super.onPreExecute();\r\n        }\r\n\r\n        @Override\r\n        protected Void doInBackground(Void... params) {\r\n\r\n            // Create an array\r\n            ArrayList arraylist = new ArrayList<HashMap<String, String>>();\r\n\r\n            try {\r\n                // Connect to the Website URL\r\n                Document doc = Jsoup\r\n                        .connect(url)\r\n                        .cookies(session.getCookies())\r\n                        .get();\r\n\r\n\r\n                // Identify Table Class \"worldpopulation\"\r\n                for (Element table : doc.select(\"table[class=forumheaderlist]\")) {\r\n\r\n                    // Identify all the table row's(tr)\r\n                    for (Element row : table.select(\"tr:gt(0)\")) {\r\n                        HashMap<String, String> map = new HashMap<String, String>();\r\n\r\n                        // Identify all the table cell's(td)\r\n                        Elements tds = row.select(\"td\");\r\n                        String test = tds.select(\"td[class=topic starter]\").select(\"a\").toString();\r\n\r\n                        // Retrive Jsoup Elements\r\n                        // Get the first td\r\n                        System.out.println(\"TEST VALUE\" + tds.get(0).text());\r\n                        if (tds.get(0).text().contains(\"[UWI]\")) {\r\n                            map.put(\"header topic\", tds.get(0).text());\r\n                            mBlogTitle = tds.get(0).text();\r\n                            //}\r\n\r\n                            // Get the second td\r\n                            String test2 = tds.select(\"td[class=lastpost]\").select(\"a\").toString();\r\n                            System.out.println(\"TEST2 VALUE\" + tds.get(4).text());\r\n                            map.put(\"header lastpost\", tds.get(4).text());\r\n                            mBlogUploadDate = tds.get(4).text();\r\n                            mBlogUploadDate = mBlogUploadDate.substring(mBlogUploadDate.length() - 25);\r\n                            System.out.println(\"UPLOAD DATE\" + mBlogUploadDate);\r\n                            // Get the third td\r\n                            String link = tds.select(\"td[class=topic starter]\").select(\"a\").attr(\"href\");\r\n                            System.out.println(\"BLOG ID HREF\" + link);\r\n                            //get last 6 values of string for the ID\r\n                            mBlogId = link;\r\n                            mBlogId = link.substring(link.length() - 4);\r\n                            System.out.println(\"SHORTENED BLOG ID VALUE\" + mBlogId);\r\n                            System.out.println(link);\r\n\r\n                            arraylist.add(map);\r\n                            allAnnouncements.add(new Announcement(mBlogTitle, mBlogUploadDate, mBlogId, link));\r\n\r\n                        }\r\n                    }\r\n                }\r\n                System.out.println(allAnnouncements.size());\r\n                allAnnouncements.forEach(System.out::println);\r\n                sortAnnouncements();\r\n\r\n            } catch (IOException e) {\r\n                // TODO Auto-generated catch block\r\n                e.printStackTrace();\r\n            }\r\n            int i = 0;\r\n            System.out.println(\"UNREAD ANNOUNCEMENTS: \" + unreadannouncementList);\r\n            System.out.println(\"READ ANNOUNCEMENTS: \" + readannouncementList);\r\n            if(readannouncementList.size() > 0){\r\n                System.out.println(\"READ ANNOUNCEMENT ID: \" + readannouncementList.get(i).getId());\r\n            }\r\n\r\n            return null;\r\n        }\r\n\r\n        private void sortAnnouncements() {\r\n            Cursor result = myDb.getAllData();\r\n            System.out.println(\"DB COUNT:\" + result.getCount());\r\n            if (result.getCount() ==  0){\r\n                System.out.println(\"DB EMPTY.\");\r\n                unreadannouncementList.addAll(allAnnouncements);\r\n                //System.out.println(\"UNREAD ANNOUNCEMENT: \" + mBlogId);\r\n                boolean isInserted = myDb.insertData(mBlogId);\r\n                if (isInserted != true) {\r\n                    System.out.println(\"UNREAD ANNOUNCEMENT NOT ADDED TO DB\");\r\n                }\r\n            }\r\n            else {\r\n                for (Announcement announcement: allAnnouncements) {\r\n                    String id = announcement.getId();\r\n\r\n                    if (recordExists(result, id))\r\n                        readannouncementList.add(announcement);\r\n                    else\r\n                        unreadannouncementList.add(announcement);\r\n                }\r\n            }\r\n        }\r\n\r\n        public boolean recordExists(Cursor cursor, String id) {\r\n            boolean status = true;\r\n            while (cursor.moveToNext()){\r\n                String seen_id = cursor.getString(cursor.getColumnIndex(col_1));\r\n\r\n                if (id.equals(seen_id))\r\n                    status = true;\r\n                return status;\r\n            }\r\n            status = false;\r\n\r\n            return status;\r\n        }\r\n\r\n        @Override\r\n        protected void onPostExecute(Void result) {\r\n            super.onPostExecute(result);\r\n\r\n            AnnouncementAdapter adapter = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, unreadannouncementList);\r\n            unread.setAdapter(adapter);\r\n\r\n            AnnouncementAdapter adapter2 = new AnnouncementAdapter(getContext(), AnnouncementsFragment.this, readannouncementList);\r\n            read.setAdapter(adapter2);\r\n\r\n        }\r\n\r\n\r\n    }\r\n    \r\n    public void announcementsServer(){\r\n        //convert lists into JSON string\r\n        Gson gson = new Gson();\r\n        String dataArrayRead = gson.toJson(readannouncementList);\r\n        String dataArrayUnread = gson.toJson(unreadannouncementList);\r\n\r\n        //send arrays to server using volley\r\n        final String server_url= \"http://127.0.0.1:5000\";\r\n\r\n        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,\r\n                new Response.Listener<String>() {\r\n                    @Override\r\n                    public void onResponse(String response) {\r\n                        final String result = response.toString();\r\n                        System.out.println(\"response: \" + result);\r\n                    }\r\n                },\r\n                new Response.ErrorListener() {\r\n                    @Override\r\n                    public void onErrorResponse(VolleyError error) {\r\n                        error.printStackTrace();\r\n                        error.getMessage();\r\n                    }\r\n                })\r\n        {\r\n            @Override\r\n            protected Map<String,String> getParams() throws AuthFailureError{\r\n                Map<String,String> param = new HashMap<String,String>();\r\n                param.put(\"readAnnouncements\", dataArrayRead); //readAnnouncements is key for server side\r\n                param.put(\"unreadAnnouncements\", dataArrayUnread); //unreadAnnouncements is key for server side\r\n\r\n                return param;\r\n            }\r\n        };\r\n        VolleyConnection.getInstance(getContext()).addRequestQue(stringRequest);\r\n\r\n    }\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/codemetrictech/seed_go/fragments/AnnouncementsFragment.java	(date 1561105201000)
++++ app/src/main/java/com/codemetrictech/seed_go/fragments/AnnouncementsFragment.java	(date 1561291263324)
+@@ -1,23 +1,33 @@
+ package com.codemetrictech.seed_go.fragments;
+ 
++import android.app.Activity;
+ import android.content.Context;
+ import android.database.Cursor;
+ import android.net.Uri;
++import android.os.AsyncTask;
+ import android.os.Bundle;
+-
+-import androidx.annotation.NonNull;
+-import androidx.fragment.app.Fragment;
+-import androidx.recyclerview.widget.LinearLayoutManager;
+-import androidx.recyclerview.widget.RecyclerView;
+-
+ import android.view.LayoutInflater;
+ import android.view.View;
+ import android.view.ViewGroup;
+ import android.widget.LinearLayout;
+ 
+-import android.app.Activity;
+-import android.os.AsyncTask;
++import androidx.annotation.NonNull;
++import androidx.annotation.Nullable;
++import androidx.fragment.app.Fragment;
++import androidx.recyclerview.widget.LinearLayoutManager;
++import androidx.recyclerview.widget.RecyclerView;
++
++import com.android.volley.AuthFailureError;
++import com.android.volley.Request;
++import com.android.volley.Response;
++import com.android.volley.VolleyError;
++import com.android.volley.toolbox.StringRequest;
++import com.codemetrictech.seed_go.AnnouncementAdapter;
+ import com.codemetrictech.seed_go.DatabaseHelper;
++import com.codemetrictech.seed_go.MainActivity;
++import com.codemetrictech.seed_go.R;
++import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
++import com.google.gson.Gson;
+ 
+ import org.jsoup.Jsoup;
+ import org.jsoup.nodes.Document;
+@@ -25,17 +35,10 @@
+ import org.jsoup.select.Elements;
+ 
+ import java.io.IOException;
++import java.util.ArrayList;
+ import java.util.HashMap;
+ import java.util.List;
+-
+-import androidx.annotation.Nullable;
+-
+-import com.codemetrictech.seed_go.AnnouncementAdapter;
+-import com.codemetrictech.seed_go.MainActivity;
+-import com.codemetrictech.seed_go.R;
+-import com.codemetrictech.seed_go.announcement.AnnouncementFragment;
+-
+-import java.util.ArrayList;
++import java.util.Map;
+ 
+ import static com.codemetrictech.seed_go.DatabaseHelper.col_1;
+ import static com.codemetrictech.seed_go.LoginActivity.session;
+@@ -373,7 +376,7 @@
+                 })
+         {
+             @Override
+-            protected Map<String,String> getParams() throws AuthFailureError{
++            protected Map<String,String> getParams() throws AuthFailureError {
+                 Map<String,String> param = new HashMap<String,String>();
+                 param.put("readAnnouncements", dataArrayRead); //readAnnouncements is key for server side
+                 param.put("unreadAnnouncements", dataArrayUnread); //unreadAnnouncements is key for server side
+@@ -381,7 +384,7 @@
+                 return param;
+             }
+         };
+-        VolleyConnection.getInstance(getContext()).addRequestQue(stringRequest);
++        //VolleyConnection.getInstance(getContext()).addRequestQue(stringRequest);
+ 
+     }
+ }
+Index: app/src/main/java/com/codemetrictech/seed_go/fragments/CoursesFragment.kt
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>package com.codemetrictech.seed_go.fragments\r\n\r\nimport android.os.Bundle\r\nimport android.view.LayoutInflater\r\nimport android.view.View\r\nimport android.view.ViewGroup\r\nimport androidx.fragment.app.Fragment\r\nimport androidx.recyclerview.widget.LinearLayoutManager\r\nimport androidx.recyclerview.widget.RecyclerView\r\nimport com.codemetrictech.seed_go.R\r\nimport com.codemetrictech.seed_go.courses.courseCard\r\nimport com.xwray.groupie.GroupAdapter\r\nimport com.xwray.groupie.ViewHolder\r\n\r\nclass CoursesFragment: Fragment(){\r\n    val TAG = \"Courses\"\r\n\r\n    private lateinit var coursesRecyclerView : RecyclerView\r\n    val courseGroupAdapter = GroupAdapter<ViewHolder>()\r\n    val coursesArrayList: ArrayList<courseCard> = arrayListOf(courseCard())\r\n\r\n\r\n    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {\r\n        return inflater.inflate(R.layout.fragment_courses, container, false)\r\n    }\r\n\r\n    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {\r\n        super.onViewCreated(view, savedInstanceState)\r\n\r\n         coursesRecyclerView = view.findViewById(R.id.recyclerView_fragment_courses)\r\n\r\n        coursesRecyclerView.apply {\r\n            layoutManager = LinearLayoutManager(context)\r\n            adapter = courseGroupAdapter\r\n        }\r\n\r\n        addCourse(\"SWEN3000: IOS Development\")\r\n        addCourse(\"SWEN3004: Web and Mobile II\")\r\n        addCourse(\"SWEN3156: Software Testing\")\r\n        addCourse(\"SWEN3002: Android Development\")\r\n\r\n    }\r\n\r\n    fun addCourse(courseTitle: String?){\r\n        var course = courseCard(courseTitle)\r\n        courseGroupAdapter.add(course)\r\n        coursesArrayList.add(course)\r\n    }\r\n\r\n    companion object courseFragmentCompanion{\r\n        private val fragmentTitle = \"CourseFragment\"\r\n\r\n        fun newInstance():CoursesFragment{\r\n            val args = Bundle()\r\n            val fragment = CoursesFragment()\r\n            fragment.arguments = args\r\n            return fragment\r\n        }\r\n\r\n        fun getFragmentTitle():String{\r\n            return fragmentTitle\r\n        }\r\n    }\r\n    \r\n    fun coursesServer(): Unit {\r\n        //send lists of announcements to server\r\n        //convert lists into JSON string\r\n        val gson = Gson()\r\n\r\n        val dataArrayCourses = gson.toJson(coursesArrayList)\r\n\r\n        //send arrays to server using volley\r\n        val server_url = \"http://127.0.0.1:5000\"\r\n\r\n        val stringRequest = object : StringRequest(Request.Method.POST, server_url,\r\n                Response.Listener { response ->\r\n                    val result = response.toString()\r\n                    println(\"response: $result\")\r\n                },\r\n                Response.ErrorListener { error ->\r\n                    error.printStackTrace()\r\n                    error.message\r\n                }) {\r\n            @Throws(AuthFailureError::class)\r\n            override fun getParams(): Map<String, String> {\r\n                val param = HashMap<String, String>()\r\n                param[\"courses\"] = dataArrayCourses //courses is key for server side\r\n\r\n                return param\r\n            }\r\n        }\r\n        VolleyConnection.getInstance(context).addRequestQue(stringRequest)\r\n\r\n    }\r\n\r\n}\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- app/src/main/java/com/codemetrictech/seed_go/fragments/CoursesFragment.kt	(date 1561105201000)
++++ app/src/main/java/com/codemetrictech/seed_go/fragments/CoursesFragment.kt	(date 1561123895962)
+@@ -7,17 +7,24 @@
+ import androidx.fragment.app.Fragment
+ import androidx.recyclerview.widget.LinearLayoutManager
+ import androidx.recyclerview.widget.RecyclerView
++import com.android.volley.AuthFailureError
++import com.android.volley.Request
++import com.android.volley.Response
++import com.android.volley.toolbox.StringRequest
+ import com.codemetrictech.seed_go.R
+-import com.codemetrictech.seed_go.courses.courseCard
++import com.codemetrictech.seed_go.courses.ExpandableCourseCard
++import com.google.gson.Gson
++import com.xwray.groupie.ExpandableGroup
+ import com.xwray.groupie.GroupAdapter
+ import com.xwray.groupie.ViewHolder
++import kotlinx.android.synthetic.main.fragment_courses.view.*
+ 
+ class CoursesFragment: Fragment(){
+     val TAG = "Courses"
+ 
+-    private lateinit var coursesRecyclerView : RecyclerView
++    lateinit var coursesRecyclerView : RecyclerView
+     val courseGroupAdapter = GroupAdapter<ViewHolder>()
+-    val coursesArrayList: ArrayList<courseCard> = arrayListOf(courseCard())
++    val coursesArrayList: ArrayList<ExpandableCourseCard> = ArrayList<ExpandableCourseCard>()
+ 
+ 
+     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+@@ -25,26 +32,20 @@
+     }
+ 
+     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
++        view.progress_bar.show()
+         super.onViewCreated(view, savedInstanceState)
+-
+          coursesRecyclerView = view.findViewById(R.id.recyclerView_fragment_courses)
+ 
+         coursesRecyclerView.apply {
+             layoutManager = LinearLayoutManager(context)
+             adapter = courseGroupAdapter
+         }
+-
+-        addCourse("SWEN3000: IOS Development")
+-        addCourse("SWEN3004: Web and Mobile II")
+-        addCourse("SWEN3156: Software Testing")
+-        addCourse("SWEN3002: Android Development")
+-
+     }
+ 
+-    fun addCourse(courseTitle: String?){
+-        var course = courseCard(courseTitle)
+-        courseGroupAdapter.add(course)
+-        coursesArrayList.add(course)
++    fun addCourse(expandableCourseCard: ExpandableCourseCard){
++        courseGroupAdapter.add(ExpandableGroup(expandableCourseCard))
++        coursesArrayList.add(expandableCourseCard)
++        view?.progress_bar?.hide()
+     }
+ 
+     companion object courseFragmentCompanion{
+@@ -61,7 +62,7 @@
+             return fragmentTitle
+         }
+     }
+-    
++
+     fun coursesServer(): Unit {
+         //send lists of announcements to server
+         //convert lists into JSON string
+@@ -89,8 +90,8 @@
+                 return param
+             }
+         }
+-        VolleyConnection.getInstance(context).addRequestQue(stringRequest)
++        //VolleyConnection.getInstance(context).addRequestQue(stringRequest)
+ 
+     }
+ 
+-}
++}
+\ No newline at end of file

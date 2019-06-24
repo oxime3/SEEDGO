@@ -1,4 +1,4 @@
-package com.codemetrictech.seed_go;
+package com.codemetrictech.seed_go.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -12,8 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
-import com.codemetrictech.seed_go.fragments.CoursesFragment;
+import com.codemetrictech.seed_go.R;
 import com.google.android.gms.vision.barcode.Barcode;
 import com.notbytes.barcode_reader.BarcodeReaderFragment;
 

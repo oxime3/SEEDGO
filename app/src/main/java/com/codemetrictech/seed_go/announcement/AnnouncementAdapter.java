@@ -1,4 +1,4 @@
-package com.codemetrictech.seed_go;
+package com.codemetrictech.seed_go.announcement;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -8,6 +8,8 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.codemetrictech.seed_go.DatabaseHelper;
+import com.codemetrictech.seed_go.R;
 import com.codemetrictech.seed_go.fragments.Announcement;
 import com.codemetrictech.seed_go.fragments.AnnouncementsFragment;
 

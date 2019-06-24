@@ -22,7 +22,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
-import com.codemetrictech.seed_go.AnnouncementAdapter;
+import com.codemetrictech.seed_go.announcement.AnnouncementAdapter;
 import com.codemetrictech.seed_go.App;
 import com.codemetrictech.seed_go.DatabaseHelper;
 import com.codemetrictech.seed_go.MainActivity;
